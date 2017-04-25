@@ -1,0 +1,43 @@
+
+// BL Range Free Space
+ORG 0x1C1EC0; ALIGN 4
+
+#include "ModularStatGetters/InstallBLRange.event"
+
+// Free Space
+ORG 0xB2B000; ALIGN 4
+
+#include "ModularStatGetters/Install.event"
+
+pMaxHPGetterModifiers: // Max HP
+	POIN thumb(pAddUnitMaxHP) thumb(pAddEquipHP) 0
+
+pCurHPGetterModifiers: // Cur HP
+	POIN thumb(pAddUnitCurHP) thumb(pAddEquipHP) thumb(pCheckForHPCap) 0
+
+pPowGetterModifiers: // Pow
+	POIN thumb(pAddUnitPow) thumb(pAddEquipPow) 0
+
+pSklGetterModifiers: // Skl
+	POIN thumb(pAddUnitSkl) thumb(pHalveIfRescuing) thumb(pAddEquipSkl) 0
+
+pSpdGetterModifiers: // Spd
+	POIN thumb(pAddUnitSpd) thumb(pHalveIfRescuing) thumb(pAddEquipSpd) 0
+
+pLckGetterModifiers: // Lck
+	POIN thumb(pAddUnitLck) thumb(pAddEquipLck) 0
+
+pDefGetterModifiers: // Def
+	POIN thumb(pAddUnitDef) thumb(pAddEquipDef) 0
+
+pResGetterModifiers: // Res
+	POIN thumb(pAddUnitRes) thumb(pAddEquipRes) thumb(pAddUnitBarrierModifier) 0
+
+pMovGetterModifiers: // Mov
+	POIN thumb(pAddUnitBaseMov) thumb(pAddUnitMovBonus) thumb(pNullifyIfGuardAI) 0
+
+pConGetterModifiers: // Con
+	POIN thumb(pAddUnitBaseCon) thumb(pAddUnitConBonus) 0
+
+pAidGetterModifiers: // Aid
+	POIN thumb(pAddUnitBaseCon) thumb(pAddUnitConBonus) thumb(pDecrement) thumb(pAdjustAidIfMounted) 0

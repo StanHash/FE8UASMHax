@@ -1,0 +1,184 @@
+#ifndef MSG_INSTALL_EVENT
+#define MSG_INSTALL_EVENT
+
+#include "eastdlib.event"
+#include "Extensions/Hack Installation.txt"
+
+#include "MSGDefinitions.event"
+
+PUSH; ORG 0x19190
+	replaceWithHack(pMaxHPGetter)
+POP
+
+PUSH; ORG 0x19150
+	replaceWithHack(pCurHPGetter)
+POP
+
+PUSH; ORG 0x191B0
+	replaceWithHack(pPowGetter)
+POP
+
+PUSH; ORG 0x191D0
+	replaceWithHack(pSklGetter)
+POP
+
+PUSH; ORG 0x19210
+	replaceWithHack(pSpdGetter)
+POP
+
+PUSH; ORG 0x19250
+	replaceWithHack(pDefGetter)
+POP
+
+PUSH; ORG 0x19270
+	replaceWithHack(pResGetter)
+POP
+
+PUSH; ORG 0x19298
+	replaceWithHack(pLckGetter)
+POP
+
+PUSH; ORG 0x189B8
+	replaceWithHack(pAidGetter)
+POP
+
+ALIGN 4
+
+pMaxHPGetter:
+	#incbin "asm/CoreLoop.bin"
+	POIN pMaxHPGetterModifiers
+
+pCurHPGetter:
+	#incbin "asm/CoreLoop.bin"
+	POIN pCurHPGetterModifiers
+
+pPowGetter:
+	#incbin "asm/CoreLoop.bin"
+	POIN pPowGetterModifiers
+
+pSklGetter:
+	#incbin "asm/CoreLoop.bin"
+	POIN pSklGetterModifiers
+
+pSpdGetter:
+	#incbin "asm/CoreLoop.bin"
+	POIN pSpdGetterModifiers
+	
+pDefGetter:
+	#incbin "asm/CoreLoop.bin"
+	POIN pDefGetterModifiers
+
+pResGetter:
+	#incbin "asm/CoreLoop.bin"
+	POIN pResGetterModifiers	
+
+pLckGetter:
+	#incbin "asm/CoreLoop.bin"
+	POIN pLckGetterModifiers
+
+pStatScreenMovGetter:
+	// This one assumes the standard mov getter is directly after, so please don't move this
+	#incbin "asm/StatScreenGetterWrapper.bin"
+pMovGetter:
+	#incbin "asm/CoreLoop.bin"
+	POIN pMovGetterModifiers
+
+pConGetter:
+	#incbin "asm/CoreLoop.bin"
+	POIN pConGetterModifiers
+
+pAidGetter:
+	#incbin "asm/CoreLoop.bin"
+	POIN pAidGetterModifiers
+
+pAddUnitMaxHP:
+	AddUnitStatRoutine(0x12)
+
+pAddUnitCurHP:
+	AddUnitStatRoutine(0x13)
+
+pAddUnitPow:
+	AddUnitStatRoutine(0x14)
+
+pAddUnitSkl:
+	AddUnitStatRoutine(0x15)
+
+pAddUnitSpd:
+	AddUnitStatRoutine(0x16)
+
+pAddUnitDef:
+	AddUnitStatRoutine(0x17)
+
+pAddUnitRes:
+	AddUnitStatRoutine(0x18)
+
+pAddUnitLck:
+	AddUnitStatRoutine(0x19)
+
+pAddUnitConBonus:
+	AddUnitStatRoutine(0x1A)
+
+pAddUnitMovBonus:
+	AddUnitStatRoutine(0x1D)
+	
+pAddEquipHP:
+	#incbin "asm/AddItemHP.bin"
+
+pAddEquipPow:
+	#incbin "asm/AddItemPow.bin"
+
+pAddEquipSkl:
+	#incbin "asm/AddItemSkl.bin"
+
+pAddEquipSpd:
+	#incbin "asm/AddItemSpd.bin"
+
+pAddEquipDef:
+	#incbin "asm/AddItemDef.bin"
+
+pAddEquipRes:
+	#incbin "asm/AddItemRes.bin"
+
+pAddUnitBaseCon:
+	#incbin "asm/AddBaseCon.bin"
+
+pAddUnitBaseMov:
+	#incbin "asm/AddBaseMov.bin"
+
+pAddEquipLck:
+	#incbin "asm/AddItemLck.bin"
+
+pCheckForHPCap:
+	#incbin "asm/CheckForHPCap.bin"
+
+pAddUnitBarrierModifier:
+	#incbin "asm/AddUnitBarrierModifier.bin"
+
+pNullifyIfGuardAI:
+	#incbin "asm/NullifyIfGuardAI.bin"
+
+pAdjustMountedAid:
+	#incbin "asm/AdjustMountedAid.bin"
+
+pCheckMounted:
+	CheckAttribueRoutine(0x00000001) // mounted aid flag
+
+pCheckRescuing:
+	CheckStateFlagRoutine(0x00000010) // rescue state flag
+
+pDecrement:
+	SubstractValueRoutine(0x1)
+
+pHalveStat:
+	SHORT 0x1040 0x4770
+
+pHalveIfRescuing:
+	ConditionalExecRoutine(pCheckRescuing, pHalveStat)
+
+pAdjustAidIfMounted:
+	ConditionalExecRoutine(pCheckMounted, pAdjustMountedAid)
+
+pAddDebug:
+	#incbin "asm/Unused/AddMore.bin"
+
+#endif // MSG_INSTALL_EVENT
