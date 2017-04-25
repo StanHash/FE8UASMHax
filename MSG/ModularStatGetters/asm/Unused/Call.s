@@ -6,12 +6,15 @@
 	.short 0xF800
 .endm
 
-AddUnitStr:
-	mov r2, #0x14
-	ldrb r1, [r1, r2] @ loading unit str
-	add r0, r1 @ adding to result
+@ Routine size: 0xA AAAA uneven
+Call:
+	push {r4, lr}
 	
-	bx lr
+	ldr r4, EALiterals
+	mov lr, r4
+	.short 0xF800
+	
+	pop {r4, pc}
 
 .ltorg
 .align

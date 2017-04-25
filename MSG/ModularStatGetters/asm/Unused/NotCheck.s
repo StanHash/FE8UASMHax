@@ -3,21 +3,17 @@
 .equ ParentCheck, EALiterals+0x00
 
 NotCheck:
-	push {r4, lr}
+	push {lr}
 	
 	@ Calling parent check
-	ldr r4, ParentCheck
-	mov lr, r4
-	.short 0xF800
+	bl ParentCheck
 	
 	@ r0 = (!r0) = (r0 ^ 0x1)
 	mov r1, #1
 	eor r0, r1
 	
 End:
-	pop {r4}
-	pop {r1}
-	bx r1
+	pop {pc}
 
 .ltorg
 .align

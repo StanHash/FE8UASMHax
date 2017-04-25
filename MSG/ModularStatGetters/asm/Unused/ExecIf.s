@@ -1,7 +1,8 @@
 .thumb
 
-.equ ConditionRoutine, EALiterals+0x00
-.equ ModifierRoutine,  EALiterals+0x04
+.equ ConditionRoutinePtr, EALiterals+0x00
+.equ ConditionArgument,   EALiterals+0x04
+.equ ModifierRoutine,     EALiterals+0x08
 
 ExecIf:
 	push {r4-r5, lr}
@@ -10,9 +11,11 @@ ExecIf:
 	mov r4, r0
 	mov r5, r1
 
+	ldr r2, ConditionArgument
+	
 	@ Calling condition
-	ldr r2, ConditionRoutine
-	mov lr, r2
+	ldr r3, ConditionRoutinePtr
+	mov lr, r3
 	.short 0xF800
 	
 	cmp r0, #0
@@ -20,10 +23,7 @@ ExecIf:
 	
 	mov r0, r4
 	mov r1, r5
-	
-	ldr r2, ModifierRoutine
-	mov lr, r2
-	.short 0xF800
+	bl ModifierRoutine
 	
 	b End
 
@@ -40,4 +40,5 @@ End:
 
 EALiterals:
 	@ POIN pCondition
-	@ POIN pExec
+	@ WORD conditionArgument
+	@ Insert Exec routine

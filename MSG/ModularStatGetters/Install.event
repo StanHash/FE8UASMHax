@@ -6,40 +6,33 @@
 
 #include "MSGDefinitions.event"
 
-PUSH; ORG 0x19190
-	replaceWithHack(pMaxHPGetter)
-POP
+PUSH
+	ORG 0x19190
+		replaceWithHack(pMaxHPGetter)
 
-PUSH; ORG 0x19150
-	replaceWithHack(pCurHPGetter)
-POP
+	ORG 0x19150
+		replaceWithHack(pCurHPGetter)
 
-PUSH; ORG 0x191B0
-	replaceWithHack(pPowGetter)
-POP
+	ORG 0x191B0
+		replaceWithHack(pPowGetter)
 
-PUSH; ORG 0x191D0
-	replaceWithHack(pSklGetter)
-POP
+	ORG 0x191D0
+		replaceWithHack(pSklGetter)
 
-PUSH; ORG 0x19210
-	replaceWithHack(pSpdGetter)
-POP
+	ORG 0x19210
+		replaceWithHack(pSpdGetter)
 
-PUSH; ORG 0x19250
-	replaceWithHack(pDefGetter)
-POP
+	ORG 0x19250
+		replaceWithHack(pDefGetter)
 
-PUSH; ORG 0x19270
-	replaceWithHack(pResGetter)
-POP
+	ORG 0x19270
+		replaceWithHack(pResGetter)
 
-PUSH; ORG 0x19298
-	replaceWithHack(pLckGetter)
-POP
+	ORG 0x19298
+		replaceWithHack(pLckGetter)
 
-PUSH; ORG 0x189B8
-	replaceWithHack(pAidGetter)
+	ORG 0x189B8
+		replaceWithHack(pAidGetter)
 POP
 
 ALIGN 4
@@ -92,34 +85,34 @@ pAidGetter:
 	POIN pAidGetterModifiers
 
 pAddUnitMaxHP:
-	AddUnitStatRoutine(0x12)
+	rAddByte(0x12)
 
 pAddUnitCurHP:
-	AddUnitStatRoutine(0x13)
+	rAddByte(0x13)
 
 pAddUnitPow:
-	AddUnitStatRoutine(0x14)
+	rAddByte(0x14)
 
 pAddUnitSkl:
-	AddUnitStatRoutine(0x15)
+	rAddByte(0x15)
 
 pAddUnitSpd:
-	AddUnitStatRoutine(0x16)
+	rAddByte(0x16)
 
 pAddUnitDef:
-	AddUnitStatRoutine(0x17)
+	rAddByte(0x17)
 
 pAddUnitRes:
-	AddUnitStatRoutine(0x18)
+	rAddByte(0x18)
 
 pAddUnitLck:
-	AddUnitStatRoutine(0x19)
+	rAddByte(0x19)
 
 pAddUnitConBonus:
-	AddUnitStatRoutine(0x1A)
+	rAddByte(0x1A)
 
 pAddUnitMovBonus:
-	AddUnitStatRoutine(0x1D)
+	rAddByte(0x1D)
 	
 pAddEquipHP:
 	#incbin "asm/AddItemHP.bin"
@@ -154,31 +147,31 @@ pCheckForHPCap:
 pAddUnitBarrierModifier:
 	#incbin "asm/AddUnitBarrierModifier.bin"
 
-pNullifyIfGuardAI:
-	#incbin "asm/NullifyIfGuardAI.bin"
-
 pAdjustMountedAid:
 	#incbin "asm/AdjustMountedAid.bin"
 
+pCheckGuardAI:
+	#incbin "asm/CheckGuardAI.bin"
+
+pNullifyIfGuardAI:
+	rIf(pCheckGuardAI); rConst(0)
+
 pCheckMounted:
-	CheckAttribueRoutine(0x00000001) // mounted aid flag
+	rHasAttribute(0x00000001) // mounted aid flag
 
 pCheckRescuing:
-	CheckStateFlagRoutine(0x00000010) // rescue state flag
-
-pDecrement:
-	SubstractValueRoutine(0x1)
-
-pHalveStat:
-	SHORT 0x1040 0x4770
+	rHasStateFlag(0x00000010) // rescue state flag
 
 pHalveIfRescuing:
-	ConditionalExecRoutine(pCheckRescuing, pHalveStat)
+	rIf(pCheckRescuing); rShiftRight(1)
 
 pAdjustAidIfMounted:
-	ConditionalExecRoutine(pCheckMounted, pAdjustMountedAid)
+	rIf(pCheckMounted); rCall(pAdjustMountedAid)
+
+pDecrement:
+	rSub; rConst(1)
 
 pAddDebug:
-	#incbin "asm/Unused/AddMore.bin"
+	rAdd; rConst(10)
 
 #endif // MSG_INSTALL_EVENT

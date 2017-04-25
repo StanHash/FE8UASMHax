@@ -42,4 +42,4 @@ End:
 .align
 
 EALiterals:
-	@ null terminated routine pointer array
+	@ POIN to null terminated routine pointer array
