@@ -4,7 +4,7 @@
 #include "eastdlib.event"
 #include "Extensions/Hack Installation.txt"
 
-#include "MSGDefinitions.event"
+#include "Install.event"
 
 // Helper macros
 #define rIfHasAttribute(aAttributeFlag) "rIf(prHasAttribute, aAttributeFlag)"
