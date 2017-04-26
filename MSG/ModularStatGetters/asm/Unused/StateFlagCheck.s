@@ -1,12 +1,8 @@
 .thumb
 
-.equ MaskToCheck, EALiterals+0x00
-
 StateFlagCheck:
 	ldr r0, [r1, #0xC]
-	ldr r1, MaskToCheck
-	
-	and r0, r1
+	and r0, r2
 	
 	cmp r0, #0
 	beq End
@@ -20,4 +16,4 @@ End:
 .align
 
 EALiterals:
-	@ WORD state mask to check for
+	@ none

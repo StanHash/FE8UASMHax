@@ -1,7 +1,5 @@
 .thumb
 
-.equ MaskToCheck, EALiterals+0x00
-
 AttributeCheck:
 	ldr r0, [r1]
 	ldr r1, [r1, #4]
@@ -10,10 +8,7 @@ AttributeCheck:
 	ldr r1, [r1, #0x28]
 	
 	orr r0, r1
-	
-	ldr r1, MaskToCheck
-	
-	and r0, r1
+	and r0, r2
 	
 	cmp r0, #0
 	beq End

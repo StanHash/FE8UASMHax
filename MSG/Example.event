@@ -2,42 +2,51 @@
 // BL Range Free Space
 ORG 0x1C1EC0; ALIGN 4
 
+// This is now required, for consistency with other wizards' stuff (notably circles')
+#define inBLRange
+
 #include "ModularStatGetters/InstallBLRange.event"
+
+#undef inBLRange
 
 // Free Space
 ORG 0xB2B000; ALIGN 4
 
 #include "ModularStatGetters/Install.event"
+// #include "_Testing/NegativeStatBoosts.event"
+
+#include "ModularStatGetters/MSGConditionsRoutines.event"
+#include "ModularStatGetters/MSGModifierRoutines.event"
 
 pMaxHPGetterModifiers: // Max HP
-	POIN thumb(pAddUnitMaxHP) thumb(pAddEquipHP) 0
+	POIN prAddUnitMaxHP prAddEquipHP 0
 
 pCurHPGetterModifiers: // Cur HP
-	POIN thumb(pAddUnitCurHP) thumb(pAddEquipHP) thumb(pCheckForHPCap) 0
+	POIN prAddUnitCurHP prAddEquipHP prCheckForHPCap 0
 
 pPowGetterModifiers: // Pow
-	POIN thumb(pAddUnitPow) thumb(pAddEquipPow) 0
+	POIN prAddUnitPow prAddEquipPow 0
 
 pSklGetterModifiers: // Skl
-	POIN thumb(pAddUnitSkl) thumb(pHalveIfRescuing) thumb(pAddEquipSkl) 0
+	POIN prAddUnitSkl prHalveIfRescuing prAddEquipSkl 0
 
 pSpdGetterModifiers: // Spd
-	POIN thumb(pAddUnitSpd) thumb(pHalveIfRescuing) thumb(pAddEquipSpd) 0
+	POIN prAddUnitSpd prHalveIfRescuing prAddEquipSpd 0
 
 pLckGetterModifiers: // Lck
-	POIN thumb(pAddUnitLck) thumb(pAddEquipLck) 0
+	POIN prAddUnitLck prAddEquipLck 0
 
 pDefGetterModifiers: // Def
-	POIN thumb(pAddUnitDef) thumb(pAddEquipDef) 0
+	POIN prAddUnitDef prAddEquipDef 0
 
 pResGetterModifiers: // Res
-	POIN thumb(pAddUnitRes) thumb(pAddEquipRes) thumb(pAddUnitBarrierModifier) 0
+	POIN prAddUnitRes prAddEquipRes prAddUnitBarrierModifier 0
 
 pMovGetterModifiers: // Mov
-	POIN thumb(pAddUnitBaseMov) thumb(pAddUnitMovBonus) thumb(pNullifyIfGuardAI) 0
+	POIN prAddUnitBaseMov prAddUnitMovBonus prNullifyIfGuardAI 0
 
 pConGetterModifiers: // Con
-	POIN thumb(pAddUnitBaseCon) thumb(pAddUnitConBonus) 0
+	POIN prAddUnitBaseCon prAddUnitConBonus 0
 
 pAidGetterModifiers: // Aid
-	POIN thumb(pAddUnitBaseCon) thumb(pAddUnitConBonus) thumb(pDecrement) thumb(pAdjustAidIfMounted) 0
+	POIN prAddUnitFullCon prDecrement prAdjustAidIfMounted 0

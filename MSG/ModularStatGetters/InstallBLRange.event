@@ -6,6 +6,10 @@
 
 #include "MSGDefinitions.event"
 
+#ifndef inBLRange
+	ERROR _file_ is not in BL Range
+#endif
+
 #include "InjectMovGetters.event"
 #include "InjectConGetters.event"
 

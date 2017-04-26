@@ -6,7 +6,7 @@
 	.short 0xF800
 .endm
 
-@ Routine size: 0xA AAAA uneven
+@ Routine size: 0xA reeeeee wasted space reeeeee
 Call:
 	push {r4, lr}
 	
