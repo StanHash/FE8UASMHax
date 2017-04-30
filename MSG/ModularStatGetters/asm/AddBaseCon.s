@@ -8,7 +8,9 @@
 
 AddBaseCon:
 	ldr r2, [r1]
-	ldrb r2, [r2, #0x13] @ loading unit con bonus
+	
+	add r2, #0x13
+	ldsb r2, [r2] @ loading unit con bonus
 	
 	add r0, r2
 	

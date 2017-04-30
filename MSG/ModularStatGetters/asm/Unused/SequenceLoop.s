@@ -1,17 +1,19 @@
 .thumb
 
-.equ RoutineArrayPtr, EALiterals+0x00
+.equ RoutineArray, EALiterals+0x00
 
-@ call from whatever stat getter
-CoreLoop:
+SequenceLoop:
 	push {r4-r6, lr}
 	
-	mov r4, r0
-	mov r5, r1
-
-	ldr r6, RoutineArrayPtr
+	mov r4, r1 @ Save param 1
+	mov r5, r2 @ Save param 2
 	
-	mov r0, #0 @ stat starts at 0
+	@ Shamelessly taken from FE8_calc_loop.asm
+	mov r6, pc
+	add r6, #(RoutineArray - OffsetSubtract)
+OffsetSubtract:
+	
+	@ stat is r0
 	
 StartLoop:
 	ldmia r6!, {r3}
@@ -23,8 +25,8 @@ StartLoop:
 	orr r3, r1 @ sets the last bit to 1, so that it calls thumb (calling arm would require using bx instead of bl?)
 	
 	@ r0 is already current stat value
-	mov r1, r4 @ r1 = param 0
-	mov r2, r5 @ r2 = param 1
+	mov r1, r4 @ r1 = param 1
+	mov r2, r5 @ r2 = param 2
 	
 	@ call modifier routine
 	mov lr, r3
@@ -36,8 +38,6 @@ Finish:
 	@ Check if greater or equal to zero
 	cmp r0, #0
 	bge End
-	
-	mov r0, #0
 
 End:	
 	pop {r4-r6}
@@ -48,4 +48,4 @@ End:
 .align
 
 EALiterals:
-	@ null terminated routine pointer array
+	@ POIN to null terminated routine pointer array
