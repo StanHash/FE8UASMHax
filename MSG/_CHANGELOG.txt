@@ -11,7 +11,7 @@ Modular Stat Getters, Version 1.1:
 
 	IMPROVED:
 		- rIf is now more space efficient
-		- rIf with no arguments calls condition without modifying r2, allowing for one extra argument
+		- rIf with no arguments calls condition without modifying r2, allowing for one extra passed argument
 		- prAddUnitBaseCon, prAddUnitBaseMov, prAddUnitBarrierModifier and prAdjustAidIfMounted make use of macro routines instead of external asm bin
 	
 	ADDED:
@@ -31,7 +31,7 @@ Modular Stat Getters, Version 1.1:
 		- rNOP: Returns with doing anything (bx lr; nop)
 		
 		MSGConditionsRoutines.event:
-		- prNot[Cond]: returns not([Cond]) (Same for the SkillSystem one)
+		- prNot[Cond]: returns not([Cond])
 		
 		MSGModifierRoutines.event:
 		- prAddFull[Stat]: (used to be only for mov & con) calls the corresponding getter and adds it to the stat
