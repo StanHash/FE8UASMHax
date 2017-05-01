@@ -49,4 +49,4 @@ pConGetterModifiers: // Con
 	POIN prAddUnitBaseCon prAddUnitConBonus 0
 
 pAidGetterModifiers: // Aid
-	POIN prAddUnitFullCon prDecrement prAdjustAidIfMounted 0
+	POIN prAddUnitFinalCon prDecrement prAdjustAidIfMounted 0

@@ -1,13 +1,10 @@
 .thumb
 
 .equ ConditionRoutinePtr, EALiterals+0x00
-.equ ConditionArgument,   EALiterals+0x04
-.equ ModifierRoutine,     EALiterals+0x08
+.equ ModifierRoutine,     EALiterals+0x04
 
 ExecIf:
 	push {r4-r5, lr}
-
-	ldr r2, ConditionArgument
 	
 	push {r0-r2} @ Storing arguments for ModifierRoutine
 		

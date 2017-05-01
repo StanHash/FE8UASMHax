@@ -1,0 +1,44 @@
+Modular Stat Getters, Version 1.1:
+	CHANGED:
+		- rAddFull[stat] renamed to rAddFinal[stat]
+		- rNullify renamed to rNullified
+		- rHalveStat renamed to rHalved
+		- rShift[Left/Right] renamed to rShiftedRight[Left/Right]
+		- rGetCharByte and rAddCharByte renamed to rGetCharUByte and rAddCharUByte
+	
+	FIXED:
+		- Potential negative char con bonus not taken into account
+
+	IMPROVED:
+		- rIf is now more space efficient
+		- rIf with no arguments calls condition without modifying r2, allowing for one extra argument
+		- prAddUnitBaseCon, prAddUnitBaseMov, prAddUnitBarrierModifier and prAdjustAidIfMounted make use of macro routines instead of external asm bin
+	
+	ADDED:
+		MSGDefinitions.event:
+		- rCallSequence(seq): calls a list of routines in order (arg: list of pointers to routines, SPACE-SEPARATED)
+		- rCall(rptr, arg): new variant to rCall, calls routine with r2 = arg
+		- rNegated: returns (-stat)
+		- rSwitchConst(trueConst, falseConst): calls following routine, then returns a constant based on that routines result
+		- rGetCharSByte(offset): returns signed byte at [offset] in char struct (char struct passed through r1)
+		- rGetCharWord(offset): returns word at [offset] in char struct (must be 4-aligned, useful for getting pointers)
+		- rGetCharLowerHalfByte(offset): returns ((byte) [char, offset]) & 0xF
+		- rGetCharUpperHalfByte(offset): returns (((byte) [char, offset])>>4) & 0xF
+		- rGetSByteFrom, rGetUByteFrom, rGetWordFrom, rGetLowerHalfByteFrom, rGetUpperHalfByteFrom: same as their Char couterparts, but takes the result of following routine as struct pointer (useful for getting data from ROM Char & Class structs)
+		- rGetROMChar[U/S]Byte(offset): rGet[U/S]ByteFrom(offset); rGetCharWord(0x00)
+		- rGetROMClass[U/S]Byte(offset): rGet[U/S]ByteFrom(offset); rGetCharWord(0x04)
+		- rAddCharSByte(offset): rAdd; rGetCharSByte(offset)
+		- rNOP: Returns with doing anything (bx lr; nop)
+		
+		MSGConditionsRoutines.event:
+		- prNot[Cond]: returns not([Cond]) (Same for the SkillSystem one)
+		
+		MSGModifierRoutines.event:
+		- prAddFull[Stat]: (used to be only for mov & con) calls the corresponding getter and adds it to the stat
+	
+	REMOVED:
+		- prAdjustMountedAid: Obsoleted, the modification now occurs within prAdjustAidIfMounted
+	
+	TODO:
+		- prHasGuardAI and prCheckForHPCap still use external asm bin, so there is still some stuff to be made to allow them to be macro-ified.
+		- modular getters for even more stuff

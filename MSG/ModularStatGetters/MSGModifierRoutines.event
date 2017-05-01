@@ -8,41 +8,68 @@
 
 ALIGN 4
 
-prAddUnitFullCon:
+prAddUnitFinalMaxHP:
+	rAdd; rCallForUnit(pMaxHPGetter)
+
+prAddUnitFinalCurHP:
+	rAdd; rCallForUnit(pCurHPGetter)
+
+prAddUnitFinalPow:
+	rAdd; rCallForUnit(pPowGetter)
+
+prAddUnitFinalSkl:
+	rAdd; rCallForUnit(pSklGetter)
+
+prAddUnitFinalSpd:
+	rAdd; rCallForUnit(pSpdGetter)
+
+prAddUnitFinalDef:
+	rAdd; rCallForUnit(pDefGetter)
+
+prAddUnitFinalRes:
+	rAdd; rCallForUnit(pResGetter)
+
+prAddUnitFinalLck:
+	rAdd; rCallForUnit(pLckGetter)
+
+prAddUnitFinalAid:
+	rAdd; rCallForUnit(pAidGetter)
+
+prAddUnitFinalCon:
 	rAdd; rCallForUnit(pConGetter)
 
-prAddUnitFullMov:
+prAddUnitFinalMov:
 	rAdd; rCallForUnit(pMovGetter)
 
 prAddUnitMaxHP:
-	rAddCharByte(0x12)
+	rAddCharUByte(0x12)
 
 prAddUnitCurHP:
-	rAddCharByte(0x13)
+	rAddCharUByte(0x13)
 
 prAddUnitPow:
-	rAddCharByte(0x14)
+	rAddCharUByte(0x14)
 
 prAddUnitSkl:
-	rAddCharByte(0x15)
+	rAddCharUByte(0x15)
 
 prAddUnitSpd:
-	rAddCharByte(0x16)
+	rAddCharUByte(0x16)
 
 prAddUnitDef:
-	rAddCharByte(0x17)
+	rAddCharUByte(0x17)
 
 prAddUnitRes:
-	rAddCharByte(0x18)
+	rAddCharUByte(0x18)
 
 prAddUnitLck:
-	rAddCharByte(0x19)
+	rAddCharUByte(0x19)
 
 prAddUnitConBonus:
-	rAddCharByte(0x1A)
+	rAddCharUByte(0x1A)
 
 prAddUnitMovBonus:
-	rAddCharByte(0x1D)
+	rAddCharUByte(0x1D)
 	
 prAddEquipHP:
 	rAdd; rCallForEquip(prGetItemHPBonus)
@@ -66,28 +93,43 @@ prAddEquipLck:
 	rAdd; rCallForEquip(prGetItemLckBonus)
 
 prAddUnitBaseCon:
-	#incbin "asm/AddBaseCon.bin"
+{
+	rCallSequence(_prAddClassCon _prAddCharConBonus)
+	
+_prAddClassCon:
+	rAdd; rGetROMClassUByte(0x11)
+
+_prAddCharConBonus:
+	rAdd; rGetROMCharSByte(0x13)
+}
 
 prAddUnitBaseMov:
-	#incbin "asm/AddBaseMov.bin"
+	rAdd; rGetROMClassUByte(0x12)
 
 prCheckForHPCap:
 	#incbin "asm/CheckForHPCap.bin"
 
 prAddUnitBarrierModifier:
-	#incbin "asm/AddUnitBarrierModifier.bin"
-
-prAdjustMountedAid:
-	#incbin "asm/AdjustMountedAid.bin"
+	rAdd; rGetCharUpperHalfByte(0x31)
+	// #incbin "asm/AddUnitBarrierModifier.bin"
 
 prNullifyIfGuardAI:
-	rIfHasGuardAI; rNullify
+	rIfHasGuardAI; rNullified
 
 prHalveIfRescuing: // 0x00000010 = rescue state flag
-	rIfHasStateFlag(0x00000010); rHalveStat
+	rIfHasStateFlag(0x00000010); rHalved
 
 prAdjustAidIfMounted: // 0x00000001 = mounted aid flag
-	rIfHasAttribute(0x00000001); rCall(prAdjustMountedAid)
+{
+	// rIfHasAttribute(0x00000001); rCall(prAdjustMountedAid)
+	rIfHasAttribute(0x00000001); rCallSequence(_prRemoveMountedAidBonus _prNegated)
+	
+_prRemoveMountedAidBonus:
+	rSub; rSwitchConst(19, 24); rCall(prHasAttribute, 0x00004000)
+
+_prNegated:
+	rNegated
+}
 
 prDecrement:
 	rSub; rConst(1)

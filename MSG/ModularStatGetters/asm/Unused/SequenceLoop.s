@@ -19,7 +19,7 @@ StartLoop:
 	ldmia r6!, {r3}
 	
 	cmp r3, #0
-	beq Finish
+	beq End
 	
 	mov r1, #1
 	orr r3, r1 @ sets the last bit to 1, so that it calls thumb (calling arm would require using bx instead of bl?)
@@ -33,11 +33,6 @@ StartLoop:
 	.short 0xF800
 	
 	b StartLoop
-	
-Finish:
-	@ Check if greater or equal to zero
-	cmp r0, #0
-	bge End
 
 End:	
 	pop {r4-r6}
