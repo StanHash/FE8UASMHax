@@ -1,0 +1,30 @@
+#ifndef BATTLE_CALC_LOOP_EVENT
+#define BATTLE_CALC_LOOP_EVENT
+
+#ifndef _FE8_
+	ERROR FE8 Battle Calc Loop
+#endif // _FE8_
+
+#include "Extensions/Hack Installation.txt"
+#include "eastdlib.event"
+
+#define prBCDefRes  0x2AA44
+#define prBCPower   0x2AABC
+#define prBCASpd    0x2AB74
+#define prBCHit     0x2ABAC
+#define prBCAvo     0x2ABE4
+#define prBCCrit    0x2AC18
+#define prBCDodge   0x2AC54
+#define prBCSupport 0x2A9D0
+#define prBCWRank   0x2AD54
+#define prBCStatus  0x2AD90
+
+prBattleCalcLoop:
+	#incbin "FE8CalcLoop.bin"
+	POIN prBCDefRes prBCPower prBCASpd prBCHit prBCAvo prBCCrit prBCDodge prBCSupport prBCWRank prBCStatus; WORD 0
+
+PUSH; ORG 0x2A95C
+	replaceWithHack(prBattleCalcLoop)
+POP
+
+#endif // BATTLE_CALC_LOOP_EVENT

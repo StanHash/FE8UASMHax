@@ -1,0 +1,26 @@
+#ifndef HAX_EVILRN_EVENT
+#define HAX_EVILRN_EVENT
+
+#ifndef _FE8_
+	ERROR EVILRN is for FE8
+#endif
+
+#include "Extensions/Hack Installation.txt"
+#include "eastdlib.event"
+
+#ifndef FreeSpace
+	#define FreeSpace 0xB2A610
+	ORG FreeSpace
+#endif
+
+{
+	PUSH; ORG 0x00CB8
+		replaceWithHack(_prEvilRN)
+	POP
+
+	ALIGN 4
+	_prEvilRN:
+		#incbin "asm/EvilRN.bin"
+}
+
+#endif // HAX_EVILRN_EVENT

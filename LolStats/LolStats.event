@@ -1,0 +1,26 @@
+#ifndef HAX_LOLSTATS_EVENT
+#define HAX_LOLSTATS_EVENT
+
+#ifndef _FE8_
+	ERROR LOLSTATS is for FE8
+#endif
+
+#include "Extensions/Hack Installation.txt"
+#include "eastdlib.event"
+
+#ifndef FreeSpace
+	#define FreeSpace 0xB2A610
+	ORG FreeSpace
+#endif
+
+{
+	PUSH; ORG 0x2B9A0
+		replaceWithHack(_prGetStatIncrease)
+	POP
+
+	ALIGN 4
+	_prGetStatIncrease:
+		#incbin "asm/GetStatIncrease.bin"
+}
+
+#endif // HAX_LOLSTATS_EVENT

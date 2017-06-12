@@ -1,7 +1,10 @@
+*_OLD*
+*__Sekrit*
 *EventAssembler*
 *_Testing*
 *.gba
 *.zip
+*.bin
 
 # Windows image file caches
 Thumbs.db

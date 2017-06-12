@@ -1,0 +1,28 @@
+#ifndef MAIN_EVENT
+#define MAIN_EVENT
+
+#include "Extensions/Hack Installation.txt"
+#include "eastdlib.event"
+
+#define FreeSpace         0xB2A610 // Size: 0xD59F0
+#define FreeSpace_BLRange 0x1C1EC0
+
+ORG FreeSpace_BLRange
+	#define inBLRange
+		
+		#include "6CDebugHax/6CDestructionFix.event"
+		
+	#undef inBLRange
+
+ORG FreeSpace
+	#include "_3rdParty/_FE8EssentialFixes.event"
+
+	#include "InstallCommon.event"
+
+	#include "UnitActionRework/UnitActionRework.event"
+	#include "LolStats/LolStats.event"
+	#include "EvilRN/EvilRN.event"
+
+	#include "Shove/Shove.event"
+
+#endif // MAIN_EVENT
