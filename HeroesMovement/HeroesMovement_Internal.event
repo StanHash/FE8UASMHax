@@ -1,0 +1,117 @@
+#ifndef HAX_HEROES_MOVEMENT_INTERNAL_EVENT
+#define HAX_HEROES_MOVEMENT_INTERNAL_EVENT
+
+// Availability routine, MSG Helpers can be used here
+ALIGN 4
+prPivot_CommandAvailability:
+	SHORT 0x2001 0x4770 // Always usable by default
+
+/// ==================================================================================================
+/// WARNING: WIZARD-ONLY ZONE, PLEASE DO NOT MESS WITH THIS FILE IF YOU DO NOT KNOW WHAT YOU ARE DOING
+/// ==================================================================================================
+
+#include "../InstallCommon.event"
+#include "../UnitActionRework/UnitActionRework.event"
+
+#include "_6CDefinitions.event"
+
+#ifndef ACTION_MOVETARGET
+	#define ACTION_MOVETARGET 0x24
+#endif
+
+#ifndef ACTION_MOVEACTIVE
+	#define ACTION_MOVEACTIVE 0x25
+#endif
+
+// START OF ASM INSERTION
+// ----------------------
+
+ALIGN 4
+prPivotCommand_Usability:
+	#incbin "asm/TargetCommandUsability.bin"
+	POIN (_prPivot_MakeTargetList+1)
+	POIN (prPivot_CommandAvailability+1)
+
+ALIGN 4
+prPivotCommand_Effect:
+	#incbin "asm/TargetCommandEffect.bin"
+	POIN (_prPivot_MakeTargetList+1)
+	POIN _pPivotSelectorDefinition
+
+ALIGN 4
+_prPivotSelection_OnSelection:
+	#incbin "asm/PivotSelection_OnSelection.bin"
+	WORD ACTION_MOVEACTIVE
+
+ALIGN 4
+_prPivot_MakeTargetList:
+	#incbin "asm/Pivot_MakeTargetList.bin"
+	POIN (prUnit_CanStandOnPosition+1)
+
+MESSAGE MoveActiveUnitAction at CURRENTOFFSET
+ALIGN 4
+_prMoveActiveUnitAction:
+	#incbin "asm/MoveActiveUnitAction.bin"
+	POIN (_p6CUnitMoveAnim_rConstruct+1)
+
+ALIGN 4
+_p6CUnitMoveAnim_rConstruct:
+	#incbin "asm/6CUnitMoveAnim/Constructor.bin"
+	POIN _p6CSingleUnitMovementAnim
+
+ALIGN 4
+_p6CUnitMoveAnim_rDestruct:
+	#incbin "asm/6CUnitMoveAnim/Destructor.bin"
+
+ALIGN 4
+_p6CUnitMoveAnim_rLoop:
+	#incbin "asm/6CUnitMoveAnim/Loopor.bin"
+	POIN (prMOVEUNIT_MoveTowards+1)
+	WORD 6 // Speed
+
+// START OF NON-ASM INSERTION
+// --------------------------
+
+ALIGN 4
+_pPivotSelectorDefinition:
+	WORD 0 // Constructor
+	WORD 0 // Destructor
+	WORD 0 // idk (actually ik kinda, see my notes)
+	WORD 0 // target change
+	WORD 0 // idk (same)
+	POIN (_prPivotSelection_OnSelection+1) // A Press
+	POIN 0x22749 // B Press (Generic Vanilla One that calls the unit menu back)
+	WORD 0 // idk (same)
+
+_p6CSingleUnitMovementAnim:
+{
+
+#ifndef NDEBUG
+	_6C_SET_NAME(__psName)
+#endif
+
+	_6C_SET_DESTRUCTOR(_p6CUnitMoveAnim_rDestruct+1)
+	_6C_CALL_ROUTINE(0x15361) // Block 6C Thread 2
+	
+	// Start Animation on Next frame only (ensuring the 6C is properly constructed)
+	_6C_YIELD
+	
+	// Actual animation
+	_6C_LOOP_ROUTINE(_p6CUnitMoveAnim_rLoop+1)
+	
+	_6C_CALL_ROUTINE(0x15371) // Unblock 6C Thread 2
+	_6C_END
+	
+#ifndef NDEBUG
+__psName:
+	String(SingleUnitMoveAnim)
+	BYTE 0
+#endif
+
+}
+
+SetUnitAction(ACTION_MOVEACTIVE, ActionRoutine(_prMoveActiveUnitAction+1))
+
+ALIGN 4 // For good measure
+
+#endif // HAX_HEROES_MOVEMENT_INTERNAL_EVENT

@@ -8,7 +8,7 @@ MoveMOVEUNITTowards:
 	
 	mov r4, #0 @ If this stays 0, it will mean nothing moved, this will become return value
 	mov r5, r0 @ This is the MOVEUNIT we are moving
-	mov r6, r3 @ This is
+	mov r6, r3 @ This is how fast we gotta go
 	
 	_MakePair r0, r1, r2
 	
@@ -17,7 +17,7 @@ MoveMOVEUNITTowards:
 	
 	@ r1 = target x
 	_GetPairFirst r1, r0
-	lsl r1, #8 @ *256 because that's how the MOVEUNIT pos works
+	lsl r1, #8 @ *256 because 16 MOVEUNIT units = 1 pixel and 16 pixels = one tile (one tile = 16*16 = 256 MOVEUNIT units)
 	
 	mov r3, #0x4C @ MOVEUNIT field 0x4C = display xPos
 	ldrh r2, [r5, r3]
@@ -33,10 +33,9 @@ MoveMOVEUNITTowards:
 		sub r2, r1      @ r2 = (r2 - r1) = sign(r2)
 		
 		orr r4, r2 @ Or to check result (will become non-zero if we have non-zero movement)
-		lsl r2, #4 @ 16 MOVEUNIT units = 1 pixel
-		mul r2, r6 @ Multiplying by 2^speed (Maybe I should force lsl here instead to avoid loop being stuck?)
+		lsl r2, r6 @ Multiplying by 2^speed (Maybe I should force lsl here instead to avoid loop being stuck?)
 		
-		add r2, r12 @ Adding 
+		add r2, r12 @ Adding
 	strh r2, [r5, r3]
 	
 	@ HANDLING Y MOVEMENT
@@ -59,8 +58,7 @@ MoveMOVEUNITTowards:
 		sub r2, r1
 		
 		orr r4, r2
-		lsl r2, #4
-		mul r2, r6
+		lsl r2, r6
 		
 		add r2, r12
 	strh r2, [r5, r3]

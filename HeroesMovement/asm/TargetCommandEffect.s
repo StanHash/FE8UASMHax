@@ -1,11 +1,10 @@
 .thumb
 .include "_Definitions.h.s"
-.include "_Config.h.s"
 
-.set prMakeShoveTargetList,           EALiterals+0x00
-.set pShoveTargetSelectionDefinition, EALiterals+0x04
-	
-ShoveEffect:
+.set prMakeTargetList,          EALiterals+0x00
+.set pTargetSelectorDefinition, EALiterals+0x04
+
+TargetCommandEffect:
 	push {lr}
 	
 	@ Loading Active Unit
@@ -13,11 +12,11 @@ ShoveEffect:
 	ldr r0, [r3]
 
 	@ Making Target List
-	ldr r3, prMakeShoveTargetList
+	ldr r3, prMakeTargetList
 	_blr r3
 	
 	@ Making Target Selection 6C
-	ldr r0, pShoveTargetSelectionDefinition
+	ldr r0, pTargetSelectorDefinition
 	_blh prTargetSelection_New
 	
 	@ 0x01 = ???, 0x02 = Kill Menu, 0x04 = Beep Sound, 0x10 = Clear Menu Gfx
@@ -30,5 +29,5 @@ ShoveEffect:
 .align
 
 EALiterals:
-	@ POIN prMakeShoveTargetList
-	@ POIN pShoveTargetSelectionDefinition
+	@ POIN prMakeTargetList
+	@ POIN pTargetSelectorDefinition

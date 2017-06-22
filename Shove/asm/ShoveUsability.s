@@ -1,6 +1,6 @@
 .thumb
-
 .include "_Definitions.h.s"
+.include "_Config.h.s"
 
 .set prMakeShoveTargetList, EALiterals+0x00
 

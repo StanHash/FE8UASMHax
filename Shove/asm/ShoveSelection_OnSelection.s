@@ -1,6 +1,6 @@
 .thumb
-
 .include "_Definitions.h.s"
+.include "_Config.h.s"
 
 .set prGetShoveTargetOffset, EALiterals+0x00
 .set ACTION_SHOVE,           EALiterals+0x04

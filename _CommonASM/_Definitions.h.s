@@ -74,9 +74,15 @@
 .set pr6C_DeleteEach,            0x08003078 @ arguments: r0 = pointer to ROM 6C code
 .set pr6C_BreakEachLoop,         0x08003094 @ arguments: r0 = pointer to ROM 6C code
 
+.set prSaveData_GetSRAMLocation, 0x080A3064 @ arguments: r0 = Save Slot Index (0-2 for standard save, 3-4 for suspends, 5-6 unknown); returns: SRAM Location
+.set prSaveData_SaveToSRAM,      0x080D184C @ arguments: r0 = Input Data Ptr, r1 = Output SRAM pointer, r2 = Size (bytes)
+
 .set ppActiveUnit,               0x03004E50
+.set pChapterDataStruct,         0x0202BCF0
 .set pActionStruct,              0x0203A958
 @ .set ppSubjectUnit,              0x02033F3C
+
+.set pGenericBuffer,             0x02020188
 
 .set pCurrentMapSize,            0x0202E4D4
 .set ppUnitMapRows,              0x0202E4D8

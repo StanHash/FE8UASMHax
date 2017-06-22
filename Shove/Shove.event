@@ -8,10 +8,12 @@
 #include "Extensions/Hack Installation.txt"
 #include "eastdlib.event"
 
-#include "_UnitMenuDefinitions.event"
-#include "_6CDefinitions.event"
+#define ACTION_PUSH 0x23
 
-#define ACTION_SHOVE 0x23
+// THE FOLLOWING ARE USED TO SETUP THE UNIT MENU, IF YOU HAVE YOUR UNIT MENU SETUP ELSEWHERE, MOVE THIS THERE
+// ----------------------------------------------------------------------------------------------------------
+
+#include "_UnitMenuDefinitions.event"
 
 PUSH; ORG 0x59D1F8 // Repoint Unit Menu Commands
 	POIN pUnitMenuCommands
@@ -32,7 +34,7 @@ POP
 
 #ifndef textShoveCommandDesc
 	#include "Tools/Tool Helpers.txt"
-	#define textShoveCommandDesc 0x45 // Replaces Unused "Lyn" Text
+	#define textShoveCommandDesc 0x45 // Replaces Unused "Roy" Text
 	
 	{
 		setText(textShoveCommandDesc, psShoveCommandDesc)
@@ -44,7 +46,6 @@ POP
 
 ALIGN 4
 pUnitMenuCommands:
-	MenuCommand(textShoveCommandName, textShoveCommandDesc, OrangeText, prShoveUsability, prShoveEffect)
 	UM_Seize
 	UM_Attack
 	UM_Attack_B
@@ -66,6 +67,7 @@ pUnitMenuCommands:
 	UM_Vendor
 	UM_Secret
 	UM_Arena
+	MenuCommand(textShoveCommandName, textShoveCommandDesc, NormalText, prShoveUsability, prShoveEffect)
 	UM_Rescue
 	UM_Give
 	UM_Take
@@ -81,6 +83,8 @@ UM_Separator
 
 #include "../InstallCommon.event"
 #include "../UnitActionRework/UnitActionRework.event"
+
+#include "_6CDefinitions.event"
 
 ALIGN 4
 _prGetShoveTargetOffset:
@@ -107,82 +111,89 @@ ALIGN 4
 _prShoveSelection_OnSelection:
 	#incbin "asm/ShoveSelection_OnSelection.bin"
 	POIN (_prGetShoveTargetOffset+1)
-	WORD ACTION_SHOVE
+	WORD ACTION_PUSH
 
 ALIGN 4
-_prShoveAction:
+_prPushAction:
 	#incbin "asm/ShoveAction.bin"
-	POIN (_pr6CShoveMoveWait_New+1)
-
-ALIGN 4
-_pr6CShoveMoveWait_New:
-	#incbin "asm/ShoveAnim6C/Constructor.bin"
-	POIN _p6CShoveWaitForMove
-
-ALIGN 4
-_pr6CShoveMoveWait_Destruct:
-	#incbin "asm/ShoveAnim6C/Destructor.bin"
-
-ALIGN 4
-_pr6CShoveMoveWait_PushAnim:
-	#incbin "asm/ShoveAnim6C/Call_PushAnim.bin"
-	POIN (_pr6CShoveMoveWait_MoveTowardsGoal+1)
-
-ALIGN 4
-_pr6CShoveMoveWait_MainAnim:
-	#incbin "asm/ShoveAnim6C/Call_MainAnim.bin"
-	POIN (_pr6CShoveMoveWait_MoveTowardsGoal+1)
-	POIN (_pr6CShoveMoveWait_MoveTowardsStart+1)
-
-ALIGN 4
-_pr6CShoveMoveWait_MoveTowardsGoal:
-	#incbin "asm/ShoveAnim6C/Method_MoveTowardsGoal.bin"
-	POIN (prMOVEUNIT_MoveTowards+1)
-
-ALIGN 4
-_pr6CShoveMoveWait_MoveTowardsStart:
-	#incbin "asm/ShoveAnim6C/Method_MoveTowardsStart.bin"
-	POIN (prMOVEUNIT_MoveTowards+1)
+	POIN (_p6CPushAnimator_New+1)
 
 ALIGN 4
 _pShoveSelectorDefinition:
 	WORD 0 // Constructor
 	WORD 0 // Destructor
-	WORD 0 // idk (actually ik see my notes)
+	WORD 0 // idk (actually ik kinda, see my notes)
 	WORD 0 // target change
-	WORD 0 // same
+	WORD 0 // idk (same)
 	POIN (_prShoveSelection_OnSelection+1) // A Press
 	POIN 0x22749 // B Press (Generic Vanilla One that calls the unit menu back)
-	WORD 0 // same
+	WORD 0 // idk (same)
 
 ALIGN 4
-_p6CShoveWaitForMove:
+_p6CPushAnimator_New:
+	#incbin "asm/ShoveAnim6C/Constructor.bin"
+	POIN _p6CPushAnimator
+
+ALIGN 4
+_p6CPushAnimator_Destruct:
+	#incbin "asm/ShoveAnim6C/Destructor.bin"
+
+ALIGN 4
+_p6CPushAnimator_PushingFrame:
+	#incbin "asm/ShoveAnim6C/Call_PushAnim.bin"
+	POIN (_p6CPushAnimator_MoveTowardsTarget+1)
+
+ALIGN 4
+_p6CPushAnimator_PushedFrameLoop:
+	#incbin "asm/ShoveAnim6C/Call_MainAnim.bin"
+	POIN (_p6CPushAnimator_MoveTowardsTarget+1)
+	POIN (_p6CPushAnimator_MoveTowardsStart+1)
+
+ALIGN 4
+_p6CPushAnimator_MoveTowardsTarget:
+	#incbin "asm/ShoveAnim6C/Method_MoveTowardsGoal.bin"
+	POIN (prMOVEUNIT_MoveTowards+1)
+
+ALIGN 4
+_p6CPushAnimator_MoveTowardsStart:
+	#incbin "asm/ShoveAnim6C/Method_MoveTowardsStart.bin"
+	POIN (prMOVEUNIT_MoveTowards+1)
+
+ALIGN 4
+_p6CPushAnimator:
 {
+
+#ifndef NDEBUG
 	_6C_SET_NAME(__psName)
-	_6C_SET_DESTRUCTOR(_pr6CShoveMoveWait_Destruct+1)
+#endif
+
+	_6C_SET_DESTRUCTOR(_p6CPushAnimator_Destruct+1)
 	_6C_CALL_ROUTINE(0x15361) // Block 6C Thread 2
 	
 	// Start Animation on Next frame only (ensuring the 6C is properly constructed)
 	_6C_YIELD
 	
 	// The next four calls are for the push animation
-	_6C_CALL_ROUTINE_2(_pr6CShoveMoveWait_PushAnim+1)
-	_6C_CALL_ROUTINE_2(_pr6CShoveMoveWait_PushAnim+1)
-	_6C_CALL_ROUTINE_2(_pr6CShoveMoveWait_PushAnim+1)
-	_6C_CALL_ROUTINE_2(_pr6CShoveMoveWait_PushAnim+1)
+	_6C_CALL_ROUTINE_2(_p6CPushAnimator_PushingFrame+1)
+	_6C_CALL_ROUTINE_2(_p6CPushAnimator_PushingFrame+1)
+	_6C_CALL_ROUTINE_2(_p6CPushAnimator_PushingFrame+1)
+	_6C_CALL_ROUTINE_2(_p6CPushAnimator_PushingFrame+1)
 	
 	// Finish animation
-	_6C_LOOP_ROUTINE(_pr6CShoveMoveWait_MainAnim+1)
+	_6C_LOOP_ROUTINE(_p6CPushAnimator_PushedFrameLoop+1)
 	
 	_6C_CALL_ROUTINE(0x15371) // Unblock 6C Thread 2
 	_6C_END
 	
+#ifndef NDEBUG
 __psName:
-	String(WaitForMove)
+	String(PushAnimation)
 	BYTE 0
+#endif
+
 }
 
-SetUnitAction(ACTION_SHOVE, ActionRoutine(_prShoveAction+1))
+SetUnitAction(ACTION_PUSH, ActionRoutine(_prPushAction+1))
 
 ALIGN 4 // for good measure
 

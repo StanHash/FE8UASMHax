@@ -1,0 +1,66 @@
+#ifndef HAX_HEROES_MOVEMENTS_EVENT
+#define HAX_HEROES_MOVEMENTS_EVENT
+
+#ifndef _FE8_
+	ERROR HEROES MOVEMENT is for FE8
+#endif // _FE8_
+
+#include "Tools/Tool Helpers.txt"
+
+#define textPivotCommandName 0x44 // Replaces Unused "Lyn" Text
+#define textPivotCommandDesc 0x45 // Replaces Unused "Roy" Text
+
+setText(textPivotCommandName, psPivotCommandName)
+psPivotCommandName:
+	BYTE 0x20 // space for align
+	String(Pivot)
+	BYTE 0
+
+setText(textPivotCommandDesc, psPivotCommandDesc)
+psPivotCommandDesc:
+	String(Move to opposite side of adjacent ally.)
+	BYTE 0
+
+#include "_UnitMenuDefinitions.event"
+
+PUSH; ORG 0x59D1F8 // Repoint Unit Menu Commands
+	POIN pUnitMenuCommands
+POP
+
+ALIGN 4
+pUnitMenuCommands:
+	MenuCommand(textPivotCommandName, textPivotCommandDesc, NormalText, prPivotCommand_Usability, prPivotCommand_Effect)
+	UM_Seize
+	UM_Attack
+	UM_Attack_B
+	UM_Staff
+	UM_Ride
+	UM_Exit
+	UM_Play
+	UM_Dance
+	UM_Steal
+	UM_Summon
+	UM_Summon_DK
+	UM_Pick
+	UM_Talk
+	UM_Support
+	UM_Visit
+	UM_Chest
+	UM_Door
+	UM_Armory
+	UM_Vendor
+	UM_Secret
+	UM_Arena
+	UM_Rescue
+	UM_Give
+	UM_Take
+	UM_Drop
+	UM_Item
+	UM_Trade
+	UM_Supply
+	UM_Wait
+UM_Separator 
+
+#include "HeroesMovement_Internal.event"
+
+#endif // HAX_HEROES_MOVEMENTS_EVENT

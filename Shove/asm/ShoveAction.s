@@ -1,5 +1,6 @@
 .thumb
 .include "_Definitions.h.s"
+.include "_Config.h.s"
 
 .set prWaitForMove6CNew, EALiterals+0x00
 

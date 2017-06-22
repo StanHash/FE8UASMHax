@@ -1,6 +1,5 @@
 .thumb
 .include "_Definitions.h.s"
-.include "../_Config.h.s"
 
 ShoveAnimWait6C_Destruct:
 	push {lr}
@@ -8,8 +7,8 @@ ShoveAnimWait6C_Destruct:
 	@ All we are doing here is setting the Target Standing Sprite Display back on
 	@ ---------------------------------------------------------------------------
 	
-	@ Loading Target Unit Struct
-	ldr r0, [r0, #0x38]
+	@ Loading Unit Struct
+	ldr r0, [r0, #0x30]
 	
 	@ Clearing bit 1 in Unit State bitfield
 	ldr r1, [r0, #0xC]
