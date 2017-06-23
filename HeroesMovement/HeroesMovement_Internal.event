@@ -3,14 +3,18 @@
 
 // Availability routine, MSG Helpers can be used here
 ALIGN 4
-prPivot_CommandAvailability:
+prPivotCommand_Availability:
+	SHORT 0x2001 0x4770 // Always usable by default
+
+ALIGN 4
+prRepositionCommand_Availability:
 	SHORT 0x2001 0x4770 // Always usable by default
 
 /// ==================================================================================================
 /// WARNING: WIZARD-ONLY ZONE, PLEASE DO NOT MESS WITH THIS FILE IF YOU DO NOT KNOW WHAT YOU ARE DOING
 /// ==================================================================================================
 
-#include "../InstallCommon.event"
+#include "../InstallCommonStanASM.event"
 #include "../UnitActionRework/UnitActionRework.event"
 
 #include "_6CDefinitions.event"
@@ -23,6 +27,10 @@ prPivot_CommandAvailability:
 	#define ACTION_MOVEACTIVE 0x25
 #endif
 
+#ifndef ACTION_SWAP
+	#define ACTION_SWAP 0x26
+#endif
+
 // START OF ASM INSERTION
 // ----------------------
 
@@ -30,7 +38,7 @@ ALIGN 4
 prPivotCommand_Usability:
 	#incbin "asm/TargetCommandUsability.bin"
 	POIN (_prPivot_MakeTargetList+1)
-	POIN (prPivot_CommandAvailability+1)
+	POIN (prPivotCommand_Availability+1)
 
 ALIGN 4
 prPivotCommand_Effect:
@@ -39,19 +47,114 @@ prPivotCommand_Effect:
 	POIN _pPivotSelectorDefinition
 
 ALIGN 4
+prRepositionCommand_Usability:
+	#incbin "asm/TargetCommandUsability.bin"
+	POIN (_prReposition_MakeTargetList+1)
+	POIN (prRepositionCommand_Availability+1)
+
+ALIGN 4
+prRepositionCommand_Effect:
+	#incbin "asm/TargetCommandEffect.bin"
+	POIN (_prReposition_MakeTargetList+1)
+	POIN _pRepositionSelectorDefinition
+
+ALIGN 4
+prSwapCommand_Usability:
+	#incbin "asm/TargetCommandUsability.bin"
+	POIN (_prSwap_MakeTargetList+1)
+	WORD 0 // Availability
+
+ALIGN 4
+prSwapCommand_Effect:
+	#incbin "asm/TargetCommandEffect.bin"
+	POIN (_prSwap_MakeTargetList+1)
+	POIN _pSwapSelectorDefinition
+
+ALIGN 4
+_prPivotSelection_OnConstruction:
+	#incbin "asm/TargetSelection_OnConstruction.bin"
+	WORD TEXT_BOTTOMHELP_PIVOT
+
+ALIGN 4
 _prPivotSelection_OnSelection:
 	#incbin "asm/PivotSelection_OnSelection.bin"
+	POIN (_prGetOppositePosition+1)
 	WORD ACTION_MOVEACTIVE
+
+ALIGN 4
+_prPivotSelection_OnChange:
+	#incbin "asm/PivotSelection_OnChange.bin"
+	POIN (_prGetOppositePosition+1)
+
+ALIGN 4
+_prSelection_DestructMoveDisplay:
+	#incbin "asm/KillRangeDisplay.bin"
 
 ALIGN 4
 _prPivot_MakeTargetList:
 	#incbin "asm/Pivot_MakeTargetList.bin"
+	POIN (_prGetOppositePosition+1)
 	POIN (prUnit_CanStandOnPosition+1)
 
-MESSAGE MoveActiveUnitAction at CURRENTOFFSET
+ALIGN 4
+_prRepositionSelection_OnConstruction:
+	#incbin "asm/TargetSelection_OnConstruction.bin"
+	WORD TEXT_BOTTOMHELP_REPOSITION
+
+ALIGN 4
+_prRepositionSelection_OnSelection:
+	#incbin "asm/RepositionSelection_OnSelection.bin"
+	POIN (_prGetOppositePosition+1)
+	WORD ACTION_MOVETARGET
+
+ALIGN 4
+_prRepositionSelection_OnChange:
+	#incbin "asm/RepositionSelection_OnChange.bin"
+	POIN (_prGetOppositePosition+1)
+
+ALIGN 4
+_prReposition_MakeTargetList:
+	#incbin "asm/Reposition_MakeTargetList.bin"
+	POIN (_prGetOppositePosition+1)
+	POIN (prUnit_CanStandOnPosition+1)
+
+ALIGN 4
+_prSwapSelection_OnConstruction:
+	#incbin "asm/TargetSelection_OnConstruction.bin"
+	WORD TEXT_BOTTOMHELP_SWAP
+
+ALIGN 4
+_prSwapSelection_OnChange:
+	#incbin "asm/SwapSelection_OnChange.bin"
+
+ALIGN 4
+_prSwapSelection_OnSelection:
+	#incbin "asm/SwapSelection_OnSelection.bin"
+	WORD ACTION_SWAP
+
+ALIGN 4
+_prSwap_MakeTargetList:
+	#incbin "asm/Swap_MakeTargetList.bin"
+	POIN (prUnit_CanStandOnPosition+1)
+	WORD 0 // Can Unit (r0) Swap with Unit (r1)
+
+ALIGN 4
+_prGetOppositePosition:
+	#incbin "asm/GetOppositePosition.bin"
+
 ALIGN 4
 _prMoveActiveUnitAction:
 	#incbin "asm/MoveActiveUnitAction.bin"
+	POIN (_p6CUnitMoveAnim_rConstruct+1)
+
+ALIGN 4
+_prMoveTargetUnitAction:
+	#incbin "asm/MoveTargetUnitAction.bin"
+	POIN (_p6CUnitMoveAnim_rConstruct+1)
+
+ALIGN 4
+_prSwapAction:
+	#incbin "asm/SwapAction.bin"
 	POIN (_p6CUnitMoveAnim_rConstruct+1)
 
 ALIGN 4
@@ -73,13 +176,35 @@ _p6CUnitMoveAnim_rLoop:
 // --------------------------
 
 ALIGN 4
-_pPivotSelectorDefinition:
-	WORD 0 // Constructor
-	WORD 0 // Destructor
+_pRepositionSelectorDefinition:
+	POIN (_prRepositionSelection_OnConstruction+1) // Constructor
+	POIN (_prSelection_DestructMoveDisplay+1) // Destructor
 	WORD 0 // idk (actually ik kinda, see my notes)
-	WORD 0 // target change
+	POIN (_prRepositionSelection_OnChange+1) // target change
+	WORD 0 // idk (same)
+	POIN (_prRepositionSelection_OnSelection+1) // A Press
+	POIN 0x22749 // B Press (Generic Vanilla One that calls the unit menu back)
+	WORD 0 // idk (same)
+
+ALIGN 4
+_pPivotSelectorDefinition:
+	POIN (_prPivotSelection_OnConstruction+1) // Constructor
+	POIN (_prSelection_DestructMoveDisplay+1) // Destructor
+	WORD 0 // idk (actually ik kinda, see my notes)
+	POIN (_prPivotSelection_OnChange+1) // target change
 	WORD 0 // idk (same)
 	POIN (_prPivotSelection_OnSelection+1) // A Press
+	POIN 0x22749 // B Press (Generic Vanilla One that calls the unit menu back)
+	WORD 0 // idk (same)
+
+ALIGN 4
+_pSwapSelectorDefinition:
+	POIN (_prSwapSelection_OnConstruction+1) // Constructor
+	WORD 0 // Destructor
+	WORD 0 // idk (actually ik kinda, see my notes)
+	POIN (_prSwapSelection_OnChange+1) // target change
+	WORD 0 // idk (same)
+	POIN (_prSwapSelection_OnSelection+1) // A Press
 	POIN 0x22749 // B Press (Generic Vanilla One that calls the unit menu back)
 	WORD 0 // idk (same)
 
@@ -110,7 +235,9 @@ __psName:
 
 }
 
+SetUnitAction(ACTION_MOVETARGET, ActionRoutine(_prMoveTargetUnitAction+1))
 SetUnitAction(ACTION_MOVEACTIVE, ActionRoutine(_prMoveActiveUnitAction+1))
+SetUnitAction(ACTION_SWAP,       ActionRoutine(_prSwapAction+1))
 
 ALIGN 4 // For good measure
 

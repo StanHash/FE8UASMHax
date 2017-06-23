@@ -42,6 +42,7 @@
 .set prScheduleRoutineCall,      0x080148E4 @ arguments: r0 = routine to call, r1 = argument, r2 = time (in frames) before call happens
 
 .set prGetFacingDirectionId,     0x0807B9B8 @ arguments: r0 = xSource, r1 = ySource, r2 = xTarget, r3 = yTarget
+.set prChangeActiveUnitFacing,   0x0801F50C @ arguments: r0 = xTarget, r1 = yTarget
 
 .set prIDunnoReallyButIThinkItUpdatesStandingSprites, 0x080271A0
 
@@ -53,7 +54,14 @@
 .set prUnit_ApplyMovement,       0x0801849C @ arguments: r0 = Unit Struct pointer
 .set prUnit_CanCrossTerrain,     0x0801949C @ arguments: r0 = Unit Struct pointer, r1 = Terrain Index; returns: r0 = 0 if Unit cannot cross/stand on terrain
 
+.set prGetTextInBuffer,          0x0800A240 @ arguments: r0 = text id; returns: r0 = buffer in which the text now is
+
+.set prBottomHelpDisplay_New,    0x08035708 @ arguments: r0 = parent 6C, r1 = pointer to text IN BUFFER
+
 .set prTargetSelection_New,      0x0804FA3C @ arguments: r0 = pointer to Target Selection Definition
+
+.set prMoveRange_ShowGfx,        0x0801DA98 @ arguments: r0 = type bitfield (&1 = Move Blue Squares, &2 = Range Red Squares, &4 = Range Green Squares, &16 = Range Blue Squares)
+.set prMoveRange_HideGfx,        0x0801DACC @ none
 
 .set prMOVEUNIT_NewForMapUnit,   0x08078464 @ arguments: r0 = pointer to Unit Struct; returns: r0 = new MOVEUNIT pointer
 .set prMOVEUNIT_SetMovement,     0x08078790 @ arguments: r0 = pointer to MOVEUNIT, r1 = pointer to movement buffer
@@ -80,11 +88,13 @@
 .set ppActiveUnit,               0x03004E50
 .set pChapterDataStruct,         0x0202BCF0
 .set pActionStruct,              0x0203A958
-@ .set ppSubjectUnit,              0x02033F3C
+@ .set ppSubjectUnit,              0x02033F3C @ I don't remeber where I found this?
 
-.set pGenericBuffer,             0x02020188
+.set pGenericBuffer,             0x02020188 @ Used while saving among other cases
 
 .set pCurrentMapSize,            0x0202E4D4
 .set ppUnitMapRows,              0x0202E4D8
 .set ppTerrainMapRows,           0x0202E4DC
+.set ppMoveMapRows,              0x0202E4E0
 .set ppRangeMapRows,             0x0202E4E4
+.set ppFogMapRows,               0x0202E4E8

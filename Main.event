@@ -17,13 +17,13 @@ ORG FreeSpace_BLRange
 ORG FreeSpace
 	#include "_3rdParty/_FE8EssentialFixes.event"
 
-	#include "InstallCommon.event"
+	#include "InstallCommonStanASM.event"
 
 	#include "UnitActionRework/UnitActionRework.event"
 	#include "LolStats/LolStats.event"
 	#include "EvilRN/EvilRN.event"
-
+	
 	// #include "Shove/Shove.event"
 	#include "HeroesMovement/HeroesMovement.event"
-
+	
 #endif // MAIN_EVENT

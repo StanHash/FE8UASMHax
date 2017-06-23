@@ -7,8 +7,25 @@
 
 #include "Tools/Tool Helpers.txt"
 
-#define textPivotCommandName 0x44 // Replaces Unused "Lyn" Text
-#define textPivotCommandDesc 0x45 // Replaces Unused "Roy" Text
+#define ACTION_MOVETARGET 0x24
+#define ACTION_MOVEACTIVE 0x25
+#define ACTION_SWAP       0x26
+
+#define textPivotCommandName 0x62 // Replaces Unused "bear"   Text, Change this to a textprocess generated definition
+#define textPivotCommandDesc 0x63 // Replaces Unused "normal" Text, Change this to a textprocess generated definition
+
+#define textRepositionCommandName 0x64 // Replaces Unused "strong"    Text, Change this to a textprocess generated definition
+#define textRepositionCommandDesc 0x65 // Replaces Unused "very bear" Text, Change this to a textprocess generated definition
+
+#define textSwapCommandName 0x66 // Replaces Unused "vert strong" Text, Change this to a textprocess generated definition
+#define textSwapCommandDesc 0x4D // Replaces Unused "Leyvan off"  Text, Change this to a textprocess generated definition
+
+// The following text indexes are zero-able
+#define TEXT_BOTTOMHELP_PIVOT      0x44 // Replaces Unused "Lyn"        Text, Change this to a textprocess generated definition
+#define TEXT_BOTTOMHELP_REPOSITION 0x45 // Replaces Unused "Roy"        Text, Change this to a textprocess generated definition
+#define TEXT_BOTTOMHELP_SWAP       0x4C // Replaces Unused "Ruthea off" Text, Change this to a textprocess generated definition
+
+// Here is where I insert the text, you probably want to do that with textprocess yourself
 
 setText(textPivotCommandName, psPivotCommandName)
 psPivotCommandName:
@@ -21,6 +38,43 @@ psPivotCommandDesc:
 	String(Move to opposite side of adjacent ally.)
 	BYTE 0
 
+setText(textRepositionCommandName, psRepositionCommandName)
+psRepositionCommandName:
+	BYTE 0x20 // space for align
+	String(Reposition)
+	BYTE 0
+
+setText(textRepositionCommandDesc, psRepositionCommandDesc)
+psRepositionCommandDesc:
+	String(Move to opposite side of adjacent ally.)
+	BYTE 0
+
+setText(textSwapCommandName, psSwapCommandName)
+psSwapCommandName:
+	BYTE 0x20 // space for align
+	String(Swap)
+	BYTE 0
+
+setText(textSwapCommandDesc, psSwapCommandDesc)
+psSwapCommandDesc:
+	String(Swap positions with adjacent ally.)
+	BYTE 0
+
+setText(TEXT_BOTTOMHELP_PIVOT, psPivotBottomHelpText)
+psPivotBottomHelpText:
+	String(Select an ally to move over.)
+	BYTE 0
+
+setText(TEXT_BOTTOMHELP_REPOSITION, psPivotBottomHelpText)
+psPivotBottomHelpText:
+	String(Select an ally to pull back.)
+	BYTE 0
+
+setText(TEXT_BOTTOMHELP_SWAP, psSwapBottomHelpText)
+psSwapBottomHelpText:
+	String(Select an ally to swap positions with.)
+	BYTE 0
+
 #include "_UnitMenuDefinitions.event"
 
 PUSH; ORG 0x59D1F8 // Repoint Unit Menu Commands
@@ -29,7 +83,9 @@ POP
 
 ALIGN 4
 pUnitMenuCommands:
-	MenuCommand(textPivotCommandName, textPivotCommandDesc, NormalText, prPivotCommand_Usability, prPivotCommand_Effect)
+	MenuCommand(textRepositionCommandName, textRepositionCommandDesc, NormalText, prRepositionCommand_Usability, prRepositionCommand_Effect)
+	MenuCommand(textSwapCommandName,       textSwapCommandDesc,       NormalText, prSwapCommand_Usability,       prSwapCommand_Effect)
+	MenuCommand(textPivotCommandName,      textPivotCommandDesc,      NormalText, prPivotCommand_Usability,      prPivotCommand_Effect)
 	UM_Seize
 	UM_Attack
 	UM_Attack_B

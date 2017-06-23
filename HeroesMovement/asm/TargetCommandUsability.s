@@ -10,18 +10,24 @@ TargetCommandUsability:
 	@ First, we need to check whether the active unit can use our command
 	@ -------------------------------------------------------------------
 	
-	@ Loading Active Unit in r0
-	ldr r3, =ppActiveUnit
-	ldr r0, [r3]
-	
 	@ Checking if the command is available for active unit
 	ldr r3, prCommandAvailability
+	
+	cmp r3, #0
+	beq SkipAvailability
+	
+	@ Loading Active Unit in r0
+	ldr r0, =ppActiveUnit
+	ldr r0, [r0]
+	
+	@ Call
 	_blr r3
 	
 	@ If not available, return non usable
 	cmp r0, #0
 	beq ReturnNotUsable
 	
+SkipAvailability:
 	@ Now we need to check for the target list to not be empty
 	@ --------------------------------------------------------
 	

@@ -4,7 +4,7 @@
 .set prGetTargetPosition,       EALiterals+0x00
 .set prUnit_CanStandOnPosition, EALiterals+0x04
 
-Pivot_MakeTargetList:
+Reposition_MakeTargetList:
 	push {r4, lr}
 	
 	mov r4, r0 @ Unit
@@ -16,7 +16,7 @@ Pivot_MakeTargetList:
 	ldrb r1, [r4, #0x11] @ y
 	
 	@ Loading Address of routine to call
-	adr r2, AddUnitToTargetListIfPivotable
+	adr r2, AddUnitToTargetListIfRepositionable
 	add r2, #1 @ Thumb bit
 	
 	_blh prForEachAdjacentUnit
@@ -48,34 +48,31 @@ ClearRangeMap:
 .ltorg
 .align
 
-AddUnitToTargetListIfPivotable:
+AddUnitToTargetListIfRepositionable:
 	push {r4, lr}
 	
 	@ r4 = Target Unit Struct
 	mov r4, r0
 	
-	@ Loading target position
-	ldrb r1, [r4, #0x10] @ ARG r1 = target.x
-	ldrb r2, [r4, #0x11] @ ARG r2 = target.y
+	@ Loading active unit
+	ldr r3, =ppActiveUnit
+	ldr r3, [r3] @ ARG r0 = unit
 	
-	@ Loading target unit
-	ldr r0, =ppActiveUnit
-	ldr r0, [r0] @ ARG r0 = unit
+	@ Loading unit position
+	ldrb r1, [r3, #0x10] @ ARG r1 = unit.x
+	ldrb r2, [r3, #0x11] @ ARG r2 = unit.y
 	
-	@ Getting Target position in [r1, r2]
+	@ Getting potential target position in [r1, r2]
 	ldr r3, prGetTargetPosition
 	_blr r3
 	
-	@ Loading target unit again
-	ldr r0, =ppActiveUnit
-	ldr r0, [r0]
-	
-	@ Checking position, Arguments: r0 = unit, r1 = x, r2 = y
+	@ Checking that position
+	mov r0, r4 @ Target Unit
 	ldr r3, prUnit_CanStandOnPosition
 	_blr r3
 	
 	cmp r0, #0
-	beq NoPivotSadface
+	beq NoRepositionHA
 	
 	ldrb r0, [r4, #0x10] @ Unit.x
 	ldrb r1, [r4, #0x11] @ Unit.y
@@ -88,7 +85,7 @@ AddUnitToTargetListIfPivotable:
 	
 	.short 0xF800
 	
-NoPivotSadface:
+NoRepositionHA:
 	pop {r4}
 	
 	pop {r0}
