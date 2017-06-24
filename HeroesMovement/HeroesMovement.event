@@ -83,9 +83,9 @@ POP
 
 ALIGN 4
 pUnitMenuCommands:
+	MenuCommand(textPivotCommandName,      textPivotCommandDesc,      NormalText, prPivotCommand_Usability,      prPivotCommand_Effect)
 	MenuCommand(textRepositionCommandName, textRepositionCommandDesc, NormalText, prRepositionCommand_Usability, prRepositionCommand_Effect)
 	MenuCommand(textSwapCommandName,       textSwapCommandDesc,       NormalText, prSwapCommand_Usability,       prSwapCommand_Effect)
-	MenuCommand(textPivotCommandName,      textPivotCommandDesc,      NormalText, prPivotCommand_Usability,      prPivotCommand_Effect)
 	UM_Seize
 	UM_Attack
 	UM_Attack_B

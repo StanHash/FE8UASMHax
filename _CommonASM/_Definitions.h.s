@@ -28,6 +28,7 @@
 	asr \rd, \rs, #16 @ shifting second part of pair (erasing first part in the process)
 .endm
 
+@ NOTE: not sure if working atm
 .macro _MakeSign rd, rs, rox=r3
 	neg \rox, \rs
     asr \rox, \rox, #31
@@ -53,6 +54,9 @@
 .set prUnit_GetStruct,           0x08019430 @ arguments: r0 = Unit Allegience Index; returns: r0 = Unit Struct pointer (0 if not found)
 .set prUnit_ApplyMovement,       0x0801849C @ arguments: r0 = Unit Struct pointer
 .set prUnit_CanCrossTerrain,     0x0801949C @ arguments: r0 = Unit Struct pointer, r1 = Terrain Index; returns: r0 = 0 if Unit cannot cross/stand on terrain
+.set prUnit_GetEquippedWeapon,   0x08016B28 @ arguments: r0 = Unit Struct pointer; returns: r0 = Item Short
+
+.set prItem_GetMight,            0x080175DC @ arguments: r0 = Item Short; returns: r0 = Might
 
 .set prGetTextInBuffer,          0x0800A240 @ arguments: r0 = text id; returns: r0 = buffer in which the text now is
 

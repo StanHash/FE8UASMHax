@@ -2,13 +2,9 @@
 #define HAX_HEROES_MOVEMENT_INTERNAL_EVENT
 
 // Availability routine, MSG Helpers can be used here
-ALIGN 4
-prPivotCommand_Availability:
-	SHORT 0x2001 0x4770 // Always usable by default
-
-ALIGN 4
-prRepositionCommand_Availability:
-	SHORT 0x2001 0x4770 // Always usable by default
+// ALIGN 4
+// prPivotCommand_Availability:
+	// SHORT 0x2001 0x4770 // Always usable by default
 
 /// ==================================================================================================
 /// WARNING: WIZARD-ONLY ZONE, PLEASE DO NOT MESS WITH THIS FILE IF YOU DO NOT KNOW WHAT YOU ARE DOING
@@ -31,14 +27,14 @@ prRepositionCommand_Availability:
 	#define ACTION_SWAP 0x26
 #endif
 
-// START OF ASM INSERTION
-// ----------------------
+// PUBLIC ASM
+// ----------
 
 ALIGN 4
 prPivotCommand_Usability:
 	#incbin "asm/TargetCommandUsability.bin"
 	POIN (_prPivot_MakeTargetList+1)
-	POIN (prPivotCommand_Availability+1)
+	WORD 0 // Availability
 
 ALIGN 4
 prPivotCommand_Effect:
@@ -50,7 +46,7 @@ ALIGN 4
 prRepositionCommand_Usability:
 	#incbin "asm/TargetCommandUsability.bin"
 	POIN (_prReposition_MakeTargetList+1)
-	POIN (prRepositionCommand_Availability+1)
+	WORD 0 // Availability
 
 ALIGN 4
 prRepositionCommand_Effect:
@@ -70,6 +66,9 @@ prSwapCommand_Effect:
 	POIN (_prSwap_MakeTargetList+1)
 	POIN _pSwapSelectorDefinition
 
+// PIVOT STUFF
+// -----------
+
 ALIGN 4
 _prPivotSelection_OnConstruction:
 	#incbin "asm/TargetSelection_OnConstruction.bin"
@@ -87,14 +86,31 @@ _prPivotSelection_OnChange:
 	POIN (_prGetOppositePosition+1)
 
 ALIGN 4
-_prSelection_DestructMoveDisplay:
-	#incbin "asm/KillRangeDisplay.bin"
+_prPivot_MakeTargetList:
+	#incbin "asm/MakeAdjacentTargetList.bin"
+	POIN (prClearRangeMap+1)
+	POIN (_prPivot_TargetCheck+1)
 
 ALIGN 4
-_prPivot_MakeTargetList:
-	#incbin "asm/Pivot_MakeTargetList.bin"
+_prPivot_TargetCheck:
+	#incbin "asm/Pivot_TargetCheck.bin"
 	POIN (_prGetOppositePosition+1)
-	POIN (prUnit_CanStandOnPosition+1)
+	POIN (prUnit_CanBeOnPosition+1)
+	WORD 0 // Legality Check
+
+ALIGN 4
+_pPivotSelectorDefinition:
+	POIN (_prPivotSelection_OnConstruction+1) // Constructor
+	POIN (_prSelection_DestructMoveDisplay+1) // Destructor
+	WORD 0 // idk (actually ik kinda, see my notes)
+	POIN (_prPivotSelection_OnChange+1) // target change
+	WORD 0 // idk (same)
+	POIN (_prPivotSelection_OnSelection+1) // A Press
+	POIN 0x22749 // B Press (Generic Vanilla One that calls the unit menu back)
+	WORD 0 // idk (same)
+
+// REPOSITION STUFF
+// ----------------
 
 ALIGN 4
 _prRepositionSelection_OnConstruction:
@@ -114,9 +130,30 @@ _prRepositionSelection_OnChange:
 
 ALIGN 4
 _prReposition_MakeTargetList:
-	#incbin "asm/Reposition_MakeTargetList.bin"
+	#incbin "asm/MakeAdjacentTargetList.bin"
+	POIN (prClearRangeMap+1)
+	POIN (_prReposition_TargetCheck+1)
+
+ALIGN 4
+_prReposition_TargetCheck:
+	#incbin "asm/Reposition_TargetCheck.bin"
 	POIN (_prGetOppositePosition+1)
-	POIN (prUnit_CanStandOnPosition+1)
+	POIN (prUnit_CanBeOnPosition+1)
+	WORD 0 // Legality Check
+
+ALIGN 4
+_pRepositionSelectorDefinition:
+	POIN (_prRepositionSelection_OnConstruction+1) // Constructor
+	POIN (_prSelection_DestructMoveDisplay+1) // Destructor
+	WORD 0 // idk (actually ik kinda, see my notes)
+	POIN (_prRepositionSelection_OnChange+1) // target change
+	WORD 0 // idk (same)
+	POIN (_prRepositionSelection_OnSelection+1) // A Press
+	POIN 0x22749 // B Press (Generic Vanilla One that calls the unit menu back)
+	WORD 0 // idk (same)
+
+// SWAP STUFF
+// ----------
 
 ALIGN 4
 _prSwapSelection_OnConstruction:
@@ -134,13 +171,37 @@ _prSwapSelection_OnSelection:
 
 ALIGN 4
 _prSwap_MakeTargetList:
-	#incbin "asm/Swap_MakeTargetList.bin"
+	#incbin "asm/MakeAdjacentTargetList.bin"
+	POIN (prClearRangeMap+1)
+	POIN (_prSwap_TargetCheck+1)
+
+ALIGN 4
+_prSwap_TargetCheck:
+	#incbin "asm/Swap_TargetCheck.bin"
 	POIN (prUnit_CanStandOnPosition+1)
-	WORD 0 // Can Unit (r0) Swap with Unit (r1)
+	WORD 0 // Legality Check
+
+ALIGN 4
+_pSwapSelectorDefinition:
+	POIN (_prSwapSelection_OnConstruction+1) // Constructor
+	WORD 0 // Destructor
+	WORD 0 // idk (actually ik kinda, see my notes)
+	POIN (_prSwapSelection_OnChange+1) // target change
+	WORD 0 // idk (same)
+	POIN (_prSwapSelection_OnSelection+1) // A Press
+	POIN 0x22749 // B Press (Generic Vanilla One that calls the unit menu back)
+	WORD 0 // idk (same)
+
+// COMMON STUFF
+// ------------
 
 ALIGN 4
 _prGetOppositePosition:
 	#incbin "asm/GetOppositePosition.bin"
+
+ALIGN 4
+_prSelection_DestructMoveDisplay:
+	#incbin "asm/KillRangeDisplay.bin"
 
 ALIGN 4
 _prMoveActiveUnitAction:
@@ -171,42 +232,6 @@ _p6CUnitMoveAnim_rLoop:
 	#incbin "asm/6CUnitMoveAnim/Loopor.bin"
 	POIN (prMOVEUNIT_MoveTowards+1)
 	WORD 6 // Speed
-
-// START OF NON-ASM INSERTION
-// --------------------------
-
-ALIGN 4
-_pRepositionSelectorDefinition:
-	POIN (_prRepositionSelection_OnConstruction+1) // Constructor
-	POIN (_prSelection_DestructMoveDisplay+1) // Destructor
-	WORD 0 // idk (actually ik kinda, see my notes)
-	POIN (_prRepositionSelection_OnChange+1) // target change
-	WORD 0 // idk (same)
-	POIN (_prRepositionSelection_OnSelection+1) // A Press
-	POIN 0x22749 // B Press (Generic Vanilla One that calls the unit menu back)
-	WORD 0 // idk (same)
-
-ALIGN 4
-_pPivotSelectorDefinition:
-	POIN (_prPivotSelection_OnConstruction+1) // Constructor
-	POIN (_prSelection_DestructMoveDisplay+1) // Destructor
-	WORD 0 // idk (actually ik kinda, see my notes)
-	POIN (_prPivotSelection_OnChange+1) // target change
-	WORD 0 // idk (same)
-	POIN (_prPivotSelection_OnSelection+1) // A Press
-	POIN 0x22749 // B Press (Generic Vanilla One that calls the unit menu back)
-	WORD 0 // idk (same)
-
-ALIGN 4
-_pSwapSelectorDefinition:
-	POIN (_prSwapSelection_OnConstruction+1) // Constructor
-	WORD 0 // Destructor
-	WORD 0 // idk (actually ik kinda, see my notes)
-	POIN (_prSwapSelection_OnChange+1) // target change
-	WORD 0 // idk (same)
-	POIN (_prSwapSelection_OnSelection+1) // A Press
-	POIN 0x22749 // B Press (Generic Vanilla One that calls the unit menu back)
-	WORD 0 // idk (same)
 
 _p6CSingleUnitMovementAnim:
 {
