@@ -10,7 +10,7 @@
 /// WARNING: WIZARD-ONLY ZONE, PLEASE DO NOT MESS WITH THIS FILE IF YOU DO NOT KNOW WHAT YOU ARE DOING
 /// ==================================================================================================
 
-#include "../InstallCommonStanASM.event"
+#include "../_StanHaxCommon/StanCommonASM.event"
 #include "../UnitActionRework/UnitActionRework.event"
 
 #include "_6CDefinitions.event"

@@ -3,26 +3,26 @@
 
 ALIGN 4
 prUnit_CanBeOnPosition:
-	#incbin "_CommonASM/CanUnitBeOnPosition.bin"
+	#incbin "asm/CanUnitBeOnPosition.bin"
 
 ALIGN 4
 prUnit_CanStandOnPosition:
-	#incbin "_CommonASM/CanUnitStandOnPosition.bin"
+	#incbin "asm/CanUnitStandOnPosition.bin"
 
 ALIGN 4
 prMOVEUNIT_MoveTowards:
-	#incbin "_CommonASM/MoveMOVEUNITTowards.bin"
+	#incbin "asm/MoveMOVEUNITTowards.bin"
 
 ALIGN 4
 prClearRangeMap:
-	#incbin "_CommonASM/ClearRangeMap.bin"
+	#incbin "asm/ClearRangeMap.bin"
 
 ALIGN 4
 prClearMoveMap:
-	#incbin "_CommonASM/ClearMoveMap.bin"
+	#incbin "asm/ClearMoveMap.bin"
 
 ALIGN 4
 prClearRangeAndMoveMap:
-	#incbin "_CommonASM/ClearRangeAndMoveMap.bin"
+	#incbin "asm/ClearRangeAndMoveMap.bin"
 
 #endif // INSTALL_STAN_COMMON_ASM_EVENT
