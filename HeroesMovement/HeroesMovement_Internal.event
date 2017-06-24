@@ -1,10 +1,28 @@
 #ifndef HAX_HEROES_MOVEMENT_INTERNAL_EVENT
 #define HAX_HEROES_MOVEMENT_INTERNAL_EVENT
 
-// Availability routine, MSG Helpers can be used here
-// ALIGN 4
-// prPivotCommand_Availability:
-	// SHORT 0x2001 0x4770 // Always usable by default
+// The following need to be defined:
+/*
+ * ACTION_MOVETARGET (free action index)
+ * ACTION_MOVEACTIVE (free action index)
+ * ACTION_SWAP       (free action index)
+ * ACTION_SHOVE      (free action index)
+ 
+ * prPivotCommand_Availability      (routine offset)
+ * prRepositionCommand_Availability (routine offset)
+ * prSwapCommand_Availability       (routine offset)
+ * prShoveCommand_Availability      (routine offset)
+ 
+ * prPivot_TargetLegality      (routine offset)
+ * prReposition_TargetLegality (routine offset)
+ * prSwap_TargetLegality       (routine offset)
+ * prShove_TargetLegality      (routine offset)
+ 
+ * TEXT_BOTTOMHELP_PIVOT      (text id)
+ * TEXT_BOTTOMHELP_REPOSITION (text id)
+ * TEXT_BOTTOMHELP_SWAP       (text id)
+ * TEXT_BOTTOMHELP_SHOVE      (text id)
+ */
 
 /// ==================================================================================================
 /// WARNING: WIZARD-ONLY ZONE, PLEASE DO NOT MESS WITH THIS FILE IF YOU DO NOT KNOW WHAT YOU ARE DOING
@@ -15,18 +33,6 @@
 
 #include "_6CDefinitions.event"
 
-#ifndef ACTION_MOVETARGET
-	#define ACTION_MOVETARGET 0x24
-#endif
-
-#ifndef ACTION_MOVEACTIVE
-	#define ACTION_MOVEACTIVE 0x25
-#endif
-
-#ifndef ACTION_SWAP
-	#define ACTION_SWAP 0x26
-#endif
-
 // PUBLIC ASM
 // ----------
 
@@ -34,7 +40,7 @@ ALIGN 4
 prPivotCommand_Usability:
 	#incbin "asm/TargetCommandUsability.bin"
 	POIN (_prPivot_MakeTargetList+1)
-	WORD 0 // Availability
+	POIN (prPivotCommand_Availability+1) // Availability
 
 ALIGN 4
 prPivotCommand_Effect:
@@ -46,7 +52,7 @@ ALIGN 4
 prRepositionCommand_Usability:
 	#incbin "asm/TargetCommandUsability.bin"
 	POIN (_prReposition_MakeTargetList+1)
-	WORD 0 // Availability
+	POIN (prRepositionCommand_Availability+1)
 
 ALIGN 4
 prRepositionCommand_Effect:
@@ -58,7 +64,7 @@ ALIGN 4
 prSwapCommand_Usability:
 	#incbin "asm/TargetCommandUsability.bin"
 	POIN (_prSwap_MakeTargetList+1)
-	WORD 0 // Availability
+	POIN (prSwapCommand_Availability+1)
 
 ALIGN 4
 prSwapCommand_Effect:
@@ -82,7 +88,7 @@ _prPivotSelection_OnSelection:
 
 ALIGN 4
 _prPivotSelection_OnChange:
-	#incbin "asm/PivotSelection_OnChange.bin"
+	#incbin "asm/ActiveMoverSelection_OnChange.bin"
 	POIN (_prGetOppositePosition+1)
 
 ALIGN 4
@@ -96,7 +102,7 @@ _prPivot_TargetCheck:
 	#incbin "asm/Pivot_TargetCheck.bin"
 	POIN (_prGetOppositePosition+1)
 	POIN (prUnit_CanBeOnPosition+1)
-	WORD 0 // Legality Check
+	POIN (prPivot_TargetLegality+1)
 
 ALIGN 4
 _pPivotSelectorDefinition:
@@ -125,7 +131,7 @@ _prRepositionSelection_OnSelection:
 
 ALIGN 4
 _prRepositionSelection_OnChange:
-	#incbin "asm/RepositionSelection_OnChange.bin"
+	#incbin "asm/TargetMoverSelection_OnChange.bin"
 	POIN (_prGetOppositePosition+1)
 
 ALIGN 4
@@ -139,7 +145,7 @@ _prReposition_TargetCheck:
 	#incbin "asm/Reposition_TargetCheck.bin"
 	POIN (_prGetOppositePosition+1)
 	POIN (prUnit_CanBeOnPosition+1)
-	WORD 0 // Legality Check
+	POIN (prReposition_TargetLegality+1)
 
 ALIGN 4
 _pRepositionSelectorDefinition:
@@ -179,7 +185,7 @@ ALIGN 4
 _prSwap_TargetCheck:
 	#incbin "asm/Swap_TargetCheck.bin"
 	POIN (prUnit_CanStandOnPosition+1)
-	WORD 0 // Legality Check
+	POIN (prSwap_TargetLegality+1)
 
 ALIGN 4
 _pSwapSelectorDefinition:

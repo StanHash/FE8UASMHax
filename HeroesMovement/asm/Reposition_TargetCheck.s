@@ -34,6 +34,7 @@ SkipLegalCheck:
 	ldrb r2, [r3, #0x11] @ ARG r2 = unit.y
 	
 	@ Getting potential target position in [r1, r2]
+	mov r0, r4 @ Target Unit
 	ldr r3, prGetTargetPosition
 	_blr r3
 	

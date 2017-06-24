@@ -7,9 +7,55 @@
 
 #include "Tools/Tool Helpers.txt"
 
-#define ACTION_MOVETARGET 0x24
-#define ACTION_MOVEACTIVE 0x25
-#define ACTION_SWAP       0x26
+#ifndef FreeSpace
+	#define FreeSpace 0xB2A610 // Size: 0xD59F0
+	ORG FreeSpace
+#endif
+
+#define ACTION_MOVETARGET 0x23
+#define ACTION_MOVEACTIVE 0x24
+#define ACTION_SWAP       0x25
+#define ACTION_SHOVE      0x26
+
+#define TEXT_BOTTOMHELP_PIVOT      0x44 // Replaces Unused "Lyn"        Text, Change this to a textprocess generated definition
+#define TEXT_BOTTOMHELP_REPOSITION 0x45 // Replaces Unused "Roy"        Text, Change this to a textprocess generated definition
+#define TEXT_BOTTOMHELP_SWAP       0x4C // Replaces Unused "Ruthea off" Text, Change this to a textprocess generated definition
+#define TEXT_BOTTOMHELP_SHOVE      0x44 // Replaces Unused "Lyn"        Text, Change this to a textprocess generated definition
+
+prPivotCommand_Availability:
+prRepositionCommand_Availability:
+prSwapCommand_Availability:
+	SHORT 0x2001 0x4770 // Commands are always available by default
+
+/*
+// Example using MSG for the skill system
+prPivotCommand_Availability:
+	rGetWrapper // value defaults to 0 (False)
+		rIfUnitHasState(US_CANTOING)
+			rWithConstant(PivotID)
+				rCallExternal(SkillTester)
+*/
+
+prPivot_TargetLegality:
+prReposition_TargetLegality:
+prSwap_TargetLegality:
+	SHORT 0x2001 0x4770 // Targets are always legal by default
+
+/*
+// Example using MSG checking for same allegiance
+prPivot_TargetLegality:
+	rGetWrapper // value defaults to 0 (False)
+		rWithSubject
+			rForActiveUnit
+				rIfUnitsAreAllied
+					rConstant(True)
+*/
+
+#include "HeroesMovement_Internal.event"
+
+// ====================================================================================================================================================
+// The rest of the file sets up the unit menu table for demonstration purposes. Feel free to change everything to accomodate your own buildfile project
+// ====================================================================================================================================================
 
 #define textPivotCommandName 0x62 // Replaces Unused "bear"   Text, Change this to a textprocess generated definition
 #define textPivotCommandDesc 0x63 // Replaces Unused "normal" Text, Change this to a textprocess generated definition
@@ -20,10 +66,8 @@
 #define textSwapCommandName 0x66 // Replaces Unused "vert strong" Text, Change this to a textprocess generated definition
 #define textSwapCommandDesc 0x4D // Replaces Unused "Leyvan off"  Text, Change this to a textprocess generated definition
 
-// The following text indexes are zero-able
-#define TEXT_BOTTOMHELP_PIVOT      0x44 // Replaces Unused "Lyn"        Text, Change this to a textprocess generated definition
-#define TEXT_BOTTOMHELP_REPOSITION 0x45 // Replaces Unused "Roy"        Text, Change this to a textprocess generated definition
-#define TEXT_BOTTOMHELP_SWAP       0x4C // Replaces Unused "Ruthea off" Text, Change this to a textprocess generated definition
+#define textShoveCommandName 0x62 // Replaces Unused "bear"   Text, Change this to a textprocess generated definition
+#define textShoveCommandDesc 0x63 // Replaces Unused "normal" Text, Change this to a textprocess generated definition
 
 // Here is where I insert the text, you probably want to do that with textprocess yourself
 
@@ -116,7 +160,5 @@ pUnitMenuCommands:
 	UM_Supply
 	UM_Wait
 UM_Separator 
-
-#include "HeroesMovement_Internal.event"
 
 #endif // HAX_HEROES_MOVEMENTS_EVENT
