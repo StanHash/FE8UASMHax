@@ -237,7 +237,7 @@ ALIGN 4
 _p6CUnitMoveAnim_rLoop:
 	#incbin "asm/6CUnitMoveAnim/Loopor.bin"
 	POIN (prMOVEUNIT_MoveTowards+1)
-	WORD 6 // Speed
+	WORD 5 // Speed
 
 _p6CSingleUnitMovementAnim:
 {

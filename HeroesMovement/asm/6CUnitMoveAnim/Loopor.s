@@ -16,14 +16,22 @@ UnitMoveAnim_Loopor:
 	@ r3 = Speed
 	ldr r3, ANIM_MOVE_SPEED
 	
+	@ Loading fast anim option value
+	ldr  r0, =(pChapterDataStruct + 0x40)
+	ldrb r0, [r0]
+	lsr r0, r0, #7 @ r0 = 1 if fast anim is set, 0 otherwise
+	
+	@ add 1 to speed if fast speed is set
+	add r3, r0
+	
 	@ Loading Unit Struct
-	ldr r2, [r0, #0x30]
+	ldr r2, [r4, #0x30]
 		@ Getting Target Position
 		ldrb r1, [r2, #0x10]
 		ldrb r2, [r2, #0x11]
 	
 	@ Loading MOVEUNIT into r0
-	ldr r0, [r0, #0x2C]
+	ldr r0, [r4, #0x2C]
 	
 	@ MOVE
 	.short 0xF800
