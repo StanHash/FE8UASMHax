@@ -15,7 +15,7 @@ ORG FreeSpace_BLRange
 	#undef inBLRange
 
 ORG FreeSpace
-	#include "_3rdParty/_FE8EssentialFixes.event"
+	#include "_FE8EssentialFixes.event"
 
 	#include "_StanHaxCommon/StanCommonASM.event"
 	

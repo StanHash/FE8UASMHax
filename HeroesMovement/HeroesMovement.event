@@ -10,6 +10,8 @@
 #ifndef FreeSpace
 	#define FreeSpace 0xB2A610 // Size: 0xD59F0
 	ORG FreeSpace
+	
+	#include "../_FE8EssentialFixes.event"
 #endif
 
 #define ACTION_MOVETARGET 0x23
