@@ -17,23 +17,26 @@
 #define ACTION_MOVETARGET 0x23
 #define ACTION_MOVEACTIVE 0x24
 #define ACTION_SWAP       0x25
-#define ACTION_SHOVE      0x26
+#define ACTION_PUSH       0x26
 
 #define TEXT_BOTTOMHELP_PIVOT      0x44 // Replaces Unused "Lyn"        Text, Change this to a textprocess generated definition
 #define TEXT_BOTTOMHELP_REPOSITION 0x45 // Replaces Unused "Roy"        Text, Change this to a textprocess generated definition
 #define TEXT_BOTTOMHELP_SWAP       0x4C // Replaces Unused "Ruthea off" Text, Change this to a textprocess generated definition
-#define TEXT_BOTTOMHELP_SHOVE      0x44 // Replaces Unused "Lyn"        Text, Change this to a textprocess generated definition
+#define TEXT_BOTTOMHELP_SHOVE      0x4E // Replaces err idc
+#define TEXT_BOTTOMHELP_SMITE      0x4F // Replaces
 
 prPivotCommand_Availability:
 prRepositionCommand_Availability:
 prSwapCommand_Availability:
+prShoveCommand_Availability:
+prSmiteCommand_Availability:
 	SHORT 0x2001 0x4770 // Commands are always available by default
 
 /*
 // Example using MSG for the skill system
 prPivotCommand_Availability:
 	rGetWrapper // value defaults to 0 (False)
-		rIfUnitHasState(US_CANTOING)
+		rIfNotUnitHasState(US_CANTOING)
 			rWithConstant(PivotID)
 				rCallExternal(SkillTester)
 */
@@ -41,6 +44,8 @@ prPivotCommand_Availability:
 prPivot_TargetLegality:
 prReposition_TargetLegality:
 prSwap_TargetLegality:
+prShove_TargetLegality:
+prSmite_TargetLegality:
 	SHORT 0x2001 0x4770 // Targets are always legal by default
 
 /*
@@ -68,8 +73,11 @@ prPivot_TargetLegality:
 #define textSwapCommandName 0x66 // Replaces Unused "vert strong" Text, Change this to a textprocess generated definition
 #define textSwapCommandDesc 0x4D // Replaces Unused "Leyvan off"  Text, Change this to a textprocess generated definition
 
-#define textShoveCommandName 0x62 // Replaces Unused "bear"   Text, Change this to a textprocess generated definition
-#define textShoveCommandDesc 0x63 // Replaces Unused "normal" Text, Change this to a textprocess generated definition
+#define textShoveCommandName 0x67 // Replaces Unused "bear"   Text, Change this to a textprocess generated definition
+#define textShoveCommandDesc 0x68 // Replaces Unused "normal" Text, Change this to a textprocess generated definition
+
+#define textSmiteCommandName 0x69 // Replaces Unused "bear"   Text, Change this to a textprocess generated definition
+#define textSmiteCommandDesc 0x6A // Replaces Unused "normal" Text, Change this to a textprocess generated definition
 
 // Here is where I insert the text, you probably want to do that with textprocess yourself
 
@@ -106,19 +114,51 @@ psSwapCommandDesc:
 	String(Swap positions with adjacent ally.)
 	BYTE 0
 
+setText(textShoveCommandName, psShoveCommandName)
+psShoveCommandName:
+	BYTE 0x20 // space for align
+	String(Shove)
+	BYTE 0
+
+setText(textShoveCommandDesc, psShoveCommandDesc)
+psShoveCommandDesc:
+	String(Push adjacent unit one tile away.)
+	BYTE 0
+
+setText(textSmiteCommandName, psSmiteCommandName)
+psSmiteCommandName:
+	BYTE 0x20 // space for align
+	String(Smite)
+	BYTE 0
+
+setText(textSmiteCommandDesc, psSmiteCommandDesc)
+psSmiteCommandDesc:
+	String(Push adjacent unit two tiles away.)
+	BYTE 0
+
 setText(TEXT_BOTTOMHELP_PIVOT, psPivotBottomHelpText)
 psPivotBottomHelpText:
 	String(Select an ally to move over.)
 	BYTE 0
 
-setText(TEXT_BOTTOMHELP_REPOSITION, psPivotBottomHelpText)
-psPivotBottomHelpText:
+setText(TEXT_BOTTOMHELP_REPOSITION, psRepositionBottomHelpText)
+psRepositionBottomHelpText:
 	String(Select an ally to pull back.)
 	BYTE 0
 
 setText(TEXT_BOTTOMHELP_SWAP, psSwapBottomHelpText)
 psSwapBottomHelpText:
 	String(Select an ally to swap positions with.)
+	BYTE 0
+
+setText(TEXT_BOTTOMHELP_SHOVE, psShoveBottomHelpText)
+psShoveBottomHelpText:
+	String(Select an unit to push a tile away.)
+	BYTE 0
+
+setText(TEXT_BOTTOMHELP_SMITE, psSmiteBottomHelpText)
+psSmiteBottomHelpText:
+	String(Select an unit to push two tiles away.)
 	BYTE 0
 
 #include "_UnitMenuDefinitions.event"
@@ -129,9 +169,6 @@ POP
 
 ALIGN 4
 pUnitMenuCommands:
-	MenuCommand(textPivotCommandName,      textPivotCommandDesc,      NormalText, prPivotCommand_Usability,      prPivotCommand_Effect)
-	MenuCommand(textRepositionCommandName, textRepositionCommandDesc, NormalText, prRepositionCommand_Usability, prRepositionCommand_Effect)
-	MenuCommand(textSwapCommandName,       textSwapCommandDesc,       NormalText, prSwapCommand_Usability,       prSwapCommand_Effect)
 	UM_Seize
 	UM_Attack
 	UM_Attack_B
@@ -157,6 +194,11 @@ pUnitMenuCommands:
 	UM_Give
 	UM_Take
 	UM_Drop
+	MenuCommand(textShoveCommandName,      textShoveCommandDesc,      NormalText, prShoveCommand_Usability,      prShoveCommand_Effect)
+	MenuCommand(textSmiteCommandName,      textSmiteCommandDesc,      NormalText, prSmiteCommand_Usability,      prSmiteCommand_Effect)
+	MenuCommand(textPivotCommandName,      textPivotCommandDesc,      NormalText, prPivotCommand_Usability,      prPivotCommand_Effect)
+	MenuCommand(textRepositionCommandName, textRepositionCommandDesc, NormalText, prRepositionCommand_Usability, prRepositionCommand_Effect)
+	MenuCommand(textSwapCommandName,       textSwapCommandDesc,       NormalText, prSwapCommand_Usability,       prSwapCommand_Effect)
 	UM_Item
 	UM_Trade
 	UM_Supply

@@ -1,7 +1,7 @@
 .thumb
 .include "_Definitions.h.s"
 
-ShoveAnimWait6C_Destruct:
+UnitMoveAnim_Destruct:
 	push {lr}
 
 	@ All we are doing here is setting the Target Standing Sprite Display back on

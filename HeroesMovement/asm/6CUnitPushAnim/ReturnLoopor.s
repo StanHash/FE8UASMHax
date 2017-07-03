@@ -4,7 +4,7 @@
 .set prMoveMOVEUNITTowards, EALiterals+0x00
 .set ANIM_MOVE_SPEED,       EALiterals+0x04
 
-UnitMoveAnim_Loopor:
+UnitPushAnim_ReturnLoopor:
 	push {r4, lr}
 	
 	mov r4, r0

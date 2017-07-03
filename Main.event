@@ -23,7 +23,22 @@ ORG FreeSpace
 	#include "LolStats/LolStats.event"
 	#include "EvilRN/EvilRN.event"
 	
+	// #include "Misc/Misc.event"
+	
+	// ORG 0x2B4B2 // 2RN crit
+		// BL(0x2A558)
+	
+	// ORG 0x2B3B4 // 2RN lethality
+		// BL(0x2A558)
+	
+	// #include "WRankRework/WRankRework.event"
+	
 	// #include "Shove/Shove.event"
 	#include "HeroesMovement/HeroesMovement.event"
+
+	// gdi circles u beat me
+	// PUSH; ORG 0xC63AC
+		// SHORT 0xE005
+	// POP
 
 #endif // MAIN_EVENT

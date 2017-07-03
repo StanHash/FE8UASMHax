@@ -2,10 +2,10 @@
 .include "_Definitions.h.s"
 
 .set prMoveMOVEUNITTowards, EALiterals+0x00
-.set ANIM_MOVE_SPEED,       EALiterals+0x04
+.set PUSH_MOVE_SPEED,       EALiterals+0x04
 
-UnitMoveAnim_Loopor:
-	push {r4, lr}
+UnitPushAnim_PushLoopor:
+	push {r4-r5, lr}
 	
 	mov r4, r0
 	
@@ -14,7 +14,7 @@ UnitMoveAnim_Loopor:
 	mov lr, r3
 	
 	@ r3 = Speed
-	ldr r3, ANIM_MOVE_SPEED
+	ldr r3, PUSH_MOVE_SPEED
 	
 	@ Loading fast anim option value
 	ldr  r0, =(pChapterDataStruct + 0x40)
@@ -23,29 +23,34 @@ UnitMoveAnim_Loopor:
 	
 	@ add 1 to speed if fast speed is set
 	add r3, r0
+
+	@ Getting Target X
+	mov  r1, #0x34
+	ldrh r1, [r4, r1]
 	
-	@ Loading Unit Struct
-	ldr r2, [r4, #0x30]
-		@ Getting Target Position
-		ldrb r1, [r2, #0x10]
-		ldrb r2, [r2, #0x11]
-	
+	@ Getting Target Y
+	mov  r2, #0x36
+	ldrh r2, [r4, r2]
+
 	@ Loading MOVEUNIT into r0
 	ldr r0, [r4, #0x2C]
 	
 	@ MOVE
 	.short 0xF800
 	
-	@ Checking return value (0 means didn't move)
-	cmp r0, #0
-	bne End
+	ldr r0, [r4, #0x38]
+	sub r0, #1
+	str r0, [r4, #0x38]
 	
-	@ Breaking 6C Loop (which effectively means we're ending the animation)
+	cmp r0, #0
+	bgt End @ If countdown didn't reach zero yet, goto end
+	
+	@ Break loop
 	mov r0, r4
 	_blh pr6C_BreakLoop
 	
 End:
-	pop {r4}
+	pop {r4-r5}
 	
 	pop {r1}
 	bx r1
@@ -55,4 +60,4 @@ End:
 
 EALiterals:
 	@ POIN prMoveMOVEUNITTowards
-	@ WORD ANIM_MOVE_SPEED
+	@ WORD PUSH_MOVE_SPEED

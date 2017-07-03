@@ -14,8 +14,15 @@
 #endif
 
 {
-	PUSH; ORG 0x2B9A0
-		replaceWithHack(_prGetStatIncrease)
+	PUSH
+		ORG 0x2B9A0
+			replaceWithHack(_prGetStatIncrease)
+		
+		ORG 0x17C8C // Replace generic level up routine call by the "realistic" one
+			BL(0x18160)
+		
+		ORG 0x180BE // Same
+			BL(0x18160)
 	POP
 
 	ALIGN 4

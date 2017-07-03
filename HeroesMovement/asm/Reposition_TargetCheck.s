@@ -10,7 +10,7 @@ Reposition_TargetCheck:
 	
 	@ r4 = Target Unit Struct
 	mov r4, r0
-		
+	
 	@ r3 = legality check routine ptr
 	ldr r3, prIsTargetLegal
 	

@@ -55,8 +55,16 @@
 .set prUnit_ApplyMovement,       0x0801849C @ arguments: r0 = Unit Struct pointer
 .set prUnit_CanCrossTerrain,     0x0801949C @ arguments: r0 = Unit Struct pointer, r1 = Terrain Index; returns: r0 = 0 if Unit cannot cross/stand on terrain
 .set prUnit_GetEquippedWeapon,   0x08016B28 @ arguments: r0 = Unit Struct pointer; returns: r0 = Item Short
+.set prUnit_GetItemCount,        0x080179D8 @ arguments: r0 = Unit Struct pointer; returns: r0 = Item Count
+.set prUnit_CanUseAsStaff,       0x080167A4 @ arguments: r0 = Unit Struct pointer, r1 = Item Short; returns: r0 = 0 if cannot use
+
+.set prUnit_GetDefense,          0x08019250 @ arguments: r0 = Unit Struct pointer; returns: r0 = Unit Computed Defense
 
 .set prItem_GetMight,            0x080175DC @ arguments: r0 = Item Short; returns: r0 = Might
+.set prItem_GetAttributes,       0x0801756C @ arguments: r0 = Item Short; returns: r0 = Attribute Word
+.set prItem_GetWType,            0x08017548 @ arguments: r0 = Item Short; returns: r0 = WType
+.set prItem_GetWRank,            0x080176B8 @ arguments: r0 = Item Short; returns: r0 = WRank
+.set prItem_GetUseEffect,        0x0801773C @ arguments: r0 = Item Short; returns: r0 = Use Effect
 
 .set prGetTextInBuffer,          0x0800A240 @ arguments: r0 = text id; returns: r0 = buffer in which the text now is
 
@@ -86,10 +94,16 @@
 .set pr6C_DeleteEach,            0x08003078 @ arguments: r0 = pointer to ROM 6C code
 .set pr6C_BreakEachLoop,         0x08003094 @ arguments: r0 = pointer to ROM 6C code
 
+.set prCall_Future,              0x080148E4 @ arguments: r0 = routine to call, r1 = passed argument, r2 = time in frames to wait before call
+
 .set prSaveData_GetSRAMLocation, 0x080A3064 @ arguments: r0 = Save Slot Index (0-2 for standard save, 3-4 for suspends, 5-6 unknown); returns: SRAM Location
 .set prSaveData_SaveToSRAM,      0x080D184C @ arguments: r0 = Input Data Ptr, r1 = Output SRAM pointer, r2 = Size (bytes)
 
 .set ppActiveUnit,               0x03004E50
+
+.set pBattleUnitInstiagator,     0x0203A4EC
+.set pBattleUnitTarget,          0x0203A56C
+
 .set pChapterDataStruct,         0x0202BCF0
 .set pActionStruct,              0x0203A958
 @ .set ppSubjectUnit,              0x02033F3C @ I don't remeber where I found this?

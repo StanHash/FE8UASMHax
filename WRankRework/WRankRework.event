@@ -1,0 +1,50 @@
+#ifndef HAX_WRANKSYSTEM_EVENT
+#define HAX_WRANKSYSTEM_EVENT
+
+#include "Extensions/Hack Installation.txt"
+#include "eastdlib.event"
+
+ALIGN 4
+prUnit_GetWRank:
+	#incbin "asm/GetUnitWeaponRank.bin"
+
+ALIGN 4
+prItem_IsLockedPrf:
+	#incbin "asm/IsItemLocked.bin"
+
+{
+	PUSH
+		ORG 0x16738 // CanUseAsWeapon WRank Check
+			jumpToHack(prHook_CanUseAsWeapon)
+		
+		ORG 0x167E4 // CanUseAsStaff WRank Check
+			jumpToHack(prHook_CanUseAsStaff)
+		
+		ORG 0x17E72 // Loading Unit WRanks
+			SHORT 0x0000 // ALIGN 4
+			jumpToHack(prHook_LoadUnitStats)
+		
+		ORG 0x17F20 // WRank autolevel routine
+			jumpToHack(prReplace_AutolevelWRank)
+	POP
+
+	ALIGN 4
+	prHook_CanUseAsWeapon:
+		#incbin "asm/Hook_CanUseAsWeapon.bin"
+		POIN (prUnit_GetWRank+1)
+
+	ALIGN 4
+	prHook_CanUseAsStaff:
+		#incbin "asm/Hook_CanUseAsStaff.bin"
+		POIN (prUnit_GetWRank+1)
+
+	ALIGN 4
+	prReplace_AutolevelWRank:
+		#incbin "asm/Replace_AutolevelWRanks.bin"
+		POIN (prItem_IsLockedPrf+1)
+
+	ALIGN 4
+	prHook_LoadUnitStats:
+		#incbin "asm/Hook_LoadUnitStats.bin"
+}
+#endif // HAX_WRANKSYSTEM_EVENT
