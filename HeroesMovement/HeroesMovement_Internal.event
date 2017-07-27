@@ -29,9 +29,8 @@
 /// ==================================================================================================
 
 #include "../_StanHaxCommon/StanCommonASM.event"
+#include "../_StanHaxCommon/_6CDefinitions.event"
 #include "../UnitActionRework/UnitActionRework.event"
-
-#include "_6CDefinitions.event"
 
 // PUBLIC ASM
 // ----------

@@ -7,7 +7,7 @@
 @ Arguments: r0 = Subject Unit Struct, r1 = Push Source X, r2 = Push Source Y
 @ Returns: r0 = Pos Pair (additionally: r1 = Pos X, r2 = Pos Y)
 GetPushPosition:
-	push {lr, r4-r7}
+	push {r4-r7, lr}
 	
 	@ r4 = Unit Struct
 	mov r4, r0

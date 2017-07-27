@@ -25,4 +25,6 @@ ALIGN 4
 prClearRangeAndMoveMap:
 	#incbin "asm/ClearRangeAndMoveMap.bin"
 
+#include "FreeSelect6C.event"
+
 #endif // INSTALL_STAN_COMMON_ASM_EVENT

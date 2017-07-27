@@ -1,0 +1,32 @@
+#ifndef HAX_EVERYONES_THE_SAME_EVENT
+#define HAX_EVERYONES_THE_SAME_EVENT
+
+#include "EveryonesTheSame_Core.event"
+
+ALIGN 4
+pMovingMapSpriteTable:
+	WORD 0x81e06e4 // Recruit (3)
+	WORD 0x81e0e40 // Recruit (3)
+	WORD 0x89A2A2E // Wyverns
+	BYTE 0x10 0x2 0x00 0x00 // Knight Slow (0x10 speed), Left?
+
+ALIGN 4
+prClass_DefaultMovingMapSprite:
+prUnit_MovingMapSprite:
+	rConstant(1)
+
+ALIGN 4
+prClass_DefaultStandingMapSprite:
+prUnit_StandingMapSprite:
+	rConstant(44) // Recruit Map Sprite
+
+ALIGN 4
+prUnit_GetBattleAnimPtr:
+	rConstant(0x88af3e4) // Amelia Battle Anims
+
+ALIGN 4
+prUnit_GetMainPortraitId:
+prUnit_GetMiniPortraitId:
+	rConstant(0x2)
+
+#endif // HAX_EVERYONES_THE_SAME_EVENT

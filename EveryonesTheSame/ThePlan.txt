@@ -1,0 +1,42 @@
+
+PER CLASS: (Size: 0x08)
+	SHORT MaleEntry
+	SHORT MaleEntryAlt
+	SHORT FemaleEntry
+	SHORT FemaleEntryAlt
+
+PER ENTRY: (Size: 0x08)
+	POIN BattleAnims         // frees word in class data
+	BYTE MapStandSpriteIndex // frees byte in class data
+	BYTE MapMoveSpriteIndex
+	BYTE DefaultPortrait     // frees byte in class data
+	[1byte Padding]
+
+Moving Map Sprite Entry:
+	CURRENT: (Size: 0x08)
+		POIN Gfx
+		POIN Other
+	
+	PROJECT: (Size: 0x10) // DONE
+		POIN Gfx
+		POIN Other
+		POIN SoundAnimData
+		BYTE MovementSpeed // frees byte in class data
+		BYTE DefaultFacing
+		[2byte Padding]
+
+Sound Anim Datas:
+	Wyvern: 0x89A2A2E
+	Pegasi: 0x89A2A5A
+	Mogall: 0x89A2AF6
+	Zombie: 0x89A2AB2
+	Skelet: 0x89A2AD4
+	Spider: 0x89A2B22
+	Doggos: 0x89A2B3A
+	Gorgon: 0x89A2B68
+	Knight: 0x89A29BC
+	Fleeet: 0x89A2BCE
+	Myhrrr: 0x89A2C02
+	
+	Footie: 0x89A2998
+	Mounts: 0x89A2A00

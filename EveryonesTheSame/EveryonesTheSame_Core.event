@@ -1,0 +1,155 @@
+#ifndef HAX_EVERYONES_THE_SAME_CORE_EVENT
+#define HAX_EVERYONES_THE_SAME_CORE_EVENT
+
+/*
+
+Symbols needed by this file:
+	pMovingMapSpriteTable
+	prClass_DefaultStandingMapSprite
+	prClass_DefaultMovingMapSprite
+	prUnit_StandingMapSprite
+	prUnit_GetMiniPortraitId
+	prUnit_GetMainPortraitId
+	prUnit_MovingMapSprite
+	prUnit_GetBattleAnimPtr
+
+*/
+
+{
+PUSH
+	ORG 0x078450
+		// Make MOVEUNIT (for unit)
+		SHORT 0x1C29 0x46C0 // mov r1, r5; nop
+		BL(_prGotoNewUnitMOVEUNITHax)
+		SHORT 0x46C0 // nop
+	
+	ORG 0x0784C4
+		// Make MOVEUNIT (for map unit)
+		SHORT 0x1C29 0x46C0 // mov r1, r5; nop
+		BL(_prGotoNewUnitMOVEUNITHax)
+		SHORT 0x46C0 // nop
+
+	ORG 0x0785F0
+		// Make MOVEUNIT (common)
+		callHack_r3((_prNewMOVEUNITHax+1))
+	
+	ORG 0x0784D8
+	_prGotoNewUnitMOVEUNITHax:
+		// please let me know if this isn't free (and possibly where the call comes from)
+		jumpToHack((_prNewUnitMOVEUNITHax+1))
+	
+	ORG 0x0786BC // Replace MOVEUNIT::SetDefaultSpriteDirection
+		jumpToHack((_prSetDefaultSpriteDirection+1))
+	
+	ORG 0x07947C // Replace MOVEUNIT::GetMovementSpeed
+		jumpToHack((_prGetMovementSpeed+1))
+	
+	ORG 0x078D6C // Replace MOVEUNIT::PlaySoundStep
+		#incbin "asm/replace/MOVEUNIT6C_PlaySoundStep.bin"
+		POIN (_prMMS_GetStepSoundPtr+1)
+
+	// Replacing MMS-related Getters
+	// -----------------------------
+	
+	ORG 0x079574 // MOVEUNIT6C Gfx
+		#incbin "asm/replace/MOVEUNIT6C_GetMMSGfx.bin"
+		POIN pMovingMapSpriteTable
+	
+	ORG 0x079588 // MOVEUNIT Class Other
+		#incbin "asm/replace/MMS_GetOtherPtr.bin"
+		POIN pMovingMapSpriteTable
+	
+	ORG 0x0BAC1C // GmapUnit Class Gfx
+		jumpToHack(_prGmapUnit_GetClassGfxPtr+1)
+	
+	ORG 0x0BAC30 // GmapUnit Class Other
+		jumpToHack(_prGmapUnit_GetClassOtherPtr+1)
+	
+	// Replacing SMS-related Getters
+	// -----------------------------
+	
+	ORG 0x018D90 // Get Class Standing Map Sprite Id
+		jumpToHack(prClass_DefaultStandingMapSprite+1)
+	
+	ORG 0x017904 // Get Unit Standing Map Sprite Id
+		jumpToHack(prUnit_StandingMapSprite+1)
+	
+	// Setting up Battle Anim Pointer Getters
+	// --------------------------------------
+	
+	ORG 0x0571EE
+		BL(_prHook_LoadBattleAnimFromR7+1)
+	
+	ORG 0x057200
+		BL(_prHook_LoadBattleAnimFromR1+1)
+	
+	ORG 0x01790C // Taking the freed space from "Get Unit Standing Map Sprite Id"
+	_prHook_LoadBattleAnimFromR7:
+		SHORT 0x1C38 0x46C0 // mov r0, r7; nop
+		jumpToHack(_prHook_GetUnitBattleAnimPtr+1)
+	_prHook_LoadBattleAnimFromR1:
+		SHORT 0x1C08 0x46C0 // mov r0, r1; nop
+		jumpToHack(_prHook_GetUnitBattleAnimPtr+1)
+	
+	// Portrait Stuff
+	ORG 0x0192B8
+		jumpToHack(prUnit_GetMainPortraitId+1)
+	
+	ORG 0x0192F4
+		jumpToHack(prUnit_GetMiniPortraitId+1)
+POP
+
+ALIGN 4
+_prMMS_GetStepSoundPtr:
+	#incbin "asm/MMS_GetStepSoundPtr.bin"
+	POIN pMovingMapSpriteTable
+
+ALIGN 4
+_prMMS_GetNormalMovementSpeed:
+	#incbin "asm/MMS_GetNormalMoveSpeed.bin"
+	POIN pMovingMapSpriteTable
+
+ALIGN 4
+_prMMS_GetDefaultDirection:
+	#incbin "asm/MMS_GetDefaultFacing.bin"
+	POIN pMovingMapSpriteTable
+
+ALIGN 4
+_prNewUnitMOVEUNITHax:
+	#incbin "asm/hook/Hook_NewUnitMOVEUNIT.bin"
+	POIN (prUnit_MovingMapSprite+1)
+
+ALIGN 4
+_prNewMOVEUNITHax:
+	#incbin "asm/hook/Hook_NewMOVEUNIT.bin"
+	POIN (prClass_DefaultMovingMapSprite+1)
+
+ALIGN 4
+_prSetDefaultSpriteDirection:
+	#incbin "asm/replace/MOVEUNIT6C_SetDefaultSpriteDirection.bin"
+	POIN (_prMMS_GetDefaultDirection+1)
+
+ALIGN 4
+_prGetMovementSpeed:
+	#incbin "asm/replace/MOVEUNIT6C_GetMovementSpeed.bin"
+	POIN (_prMMS_GetNormalMovementSpeed+1)
+
+ALIGN 4
+_prGmapUnit_GetClassGfxPtr:
+	#incbin "asm/replace/MMS_GetClassGfxPtr.bin"
+	POIN pMovingMapSpriteTable
+	POIN (prClass_DefaultMovingMapSprite+1)
+
+ALIGN 4
+_prGmapUnit_GetClassOtherPtr:
+	#incbin "asm/replace/MMS_GetClassOtherPtr.bin"
+	POIN pMovingMapSpriteTable
+	POIN (prClass_DefaultMovingMapSprite+1)
+
+ALIGN 4
+_prHook_GetUnitBattleAnimPtr:
+	#incbin "asm/hook/Hook_GetUnitBattleAnimPtr.bin"
+	POIN (prUnit_GetBattleAnimPtr+1)
+}
+
+#endif // HAX_EVERYONES_THE_SAME_CORE_EVENT

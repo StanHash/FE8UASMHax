@@ -16,29 +16,27 @@ ORG FreeSpace_BLRange
 
 ORG FreeSpace
 	#include "_FE8EssentialFixes.event"
-
 	#include "_StanHaxCommon/StanCommonASM.event"
+
+	// #include "MSG/InstallCore.event"
+	// #include "MSG/InstallHelpers.event"
 	
-	#include "UnitActionRework/UnitActionRework.event"
-	#include "LolStats/LolStats.event"
-	#include "EvilRN/EvilRN.event"
+	// #include "StatGetters/_InstallGetters.event"
 	
-	// #include "Misc/Misc.event"
-	
-	// ORG 0x2B4B2 // 2RN crit
-		// BL(0x2A558)
-	
-	// ORG 0x2B3B4 // 2RN lethality
-		// BL(0x2A558)
-	
-	// #include "WRankRework/WRankRework.event"
-	
-	// #include "Shove/Shove.event"
+	// #include "LolStats/LolStats.event"
+	// #include "EvilRN/EvilRN.event"
 	#include "HeroesMovement/HeroesMovement.event"
 
-	// gdi circles u beat me
-	// PUSH; ORG 0xC63AC
-		// SHORT 0xE005
-	// POP
+	#include "RangeFix/RangeDisplayFix.event"
+	
+	// #include "EveryonesTheSame/EveryonesTheSame.event"
+	
+	// #include "_Testing/Chapter.event"
+	
+	// #include "SpellAnimTest/SpellAnimTest.event"
+	
+	// #include "Rewarp/Rewarp.event"
+	// #include "_UnitMenuDefinitions.event"
+
 
 #endif // MAIN_EVENT
