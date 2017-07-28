@@ -27,7 +27,7 @@ ORG FreeSpace
 	// #include "EvilRN/EvilRN.event"
 	#include "HeroesMovement/HeroesMovement.event"
 
-	#include "RangeFix/RangeDisplayFix.event"
+	#include "RangeFix/RangeDisplayFix_Small.event"
 	
 	// #include "EveryonesTheSame/EveryonesTheSame.event"
 	

@@ -13,8 +13,6 @@
 	ORG FreeSpace
 #endif
 
-#include "../_StanHaxCommon/StanCommonASM.event"
-
 {
 
 PUSH
