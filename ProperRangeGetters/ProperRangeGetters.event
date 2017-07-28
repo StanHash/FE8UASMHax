@@ -1,0 +1,182 @@
+#ifndef HAX_PROPER_RANGE_GETTERS_EVENT
+#define HAX_PROPER_RANGE_GETTERS_EVENT
+
+PUSH
+	// TODO: rewrite 0803B558:FillMovementAndRangeMapForItem probably
+	
+	ORG 0x03B6CE // I have no idea tbh but it's probably the active unit
+		BL(_prMinFromActiveUnit)
+	
+	ORG 0x03B6DA // I have no idea tbh but it's probably the active unit
+		BL(_prMaxFromActiveUnit)
+	
+	ORG 0x03C182
+		BL(_prMaxFromR6)
+	
+	ORG 0x03D014
+		BL(_prMinFromActiveUnit)
+	
+	ORG 0x03D020
+		BL(_prMaxFromActiveUnit)
+	
+	ORG 0x03D880
+		SHORT 0xB5F0 // push {r4-r7, lr}
+		SHORT 0x1C04 // mov r4, r0
+		SHORT 0x1C0D // mov r5, r1
+		SHORT 0x480B // ldr r0, ppRangeMapRows
+		SHORT 0x6800 // ldr r0, [r0]
+		SHORT 0x2100 // mov r1, #0
+		BL(0x0197E4) // bl ClearMap
+		SHORT 0x7C26 // ldrb r6, [r4, #0x10]
+		SHORT 0x7C67 // ldrb r7, [r4, #0x11]
+		SHORT 0x1C28 // mov r0, r5
+		SHORT 0x1C21 // mov r1, r4
+		BL(0x01766C) // bl Item_GetMinRange
+		SHORT 0x1C21 // mov r1, r4
+		SHORT 0x1C04 // mov r4, r0
+		SHORT 0x1C28 // mov r0, r5
+		BL(0x017684) // bl Item_GetMaxRange
+		SHORT 0x1C03 // mov r3, r0
+		SHORT 0x1C30 // mov r0, r6
+		SHORT 0x1C39 // mov r1, r7
+		SHORT 0x1C22 // mov r2, r4
+		BL(0x01B9A4) // bl FillRangeMap
+		SHORT 0xBDF0 // pop {r4-r7, pc}
+		WORD  0x0202E4E4 // @ ppRangeMapRows
+
+	ORG 0x03D950
+		BL(_prMinFromActiveUnit)
+	
+	ORG 0x03D95C
+		BL(_prMaxFromActiveUnit)
+	
+	ORG 0x03E1EC
+		SHORT 0xB570 // push {r4-r6, lr}
+		SHORT 0x1C14 // mov r4, r2
+		SHORT 0x7C22 // ldrb r2, [r4, #0x10]
+		SHORT 0x1A13 // sub r3, r2, r0
+		SHORT 0xDA00 // bge ABSBranchX
+		SHORT 0x1A83 // sub r3, r0, r2
+		SHORT 0x7C60 // ldrb r0, [r4, #0x11] @ ABSBranchX
+		SHORT 0x1A42 // sub r2, r0, r1
+		SHORT 0xDA00 // bge ABSBranchY
+		SHORT 0x1A0A // sub r2, r1, r0
+		SHORT 0x189D // add r5, r3, r2 @ ABSBranchY
+		SHORT 0x1C20 // mov r0, r4
+		BL(0x016B28) // bl Unit_GetEquippedWeapon
+		SHORT 0x1C06 // mov r6, r0
+		SHORT 0xD00C // beq Return0
+		SHORT 0x1C21 // mov r1, r4
+		BL(0x017684) // bl Item_GetMaxRange
+		SHORT 0x4285 // cmp r5, r0
+		SHORT 0xDC05 // bgt Return50
+		SHORT 0x1C30 // mov r0, r6
+		SHORT 0x1C21 // mov r1, r4
+		BL(0x01766C) // bl Item_GetMinRange
+		SHORT 0x4285 // cmp r5, r0
+		SHORT 0xDA01 // bge Return0
+		SHORT 0x2032 // mov r0, #50 @ Return50
+		SHORT 0xE000 // b End
+		SHORT 0x2000 // mov r0, #0 @ Return0
+		SHORT 0xBD70 // pop {r4-r6, pc} @ End
+
+	ORG 0x03E9C0
+		BL(_prMinFromActiveUnit)
+	
+	ORG 0x03E9D2
+		BL(_prMaxFromActiveUnit)
+	
+	ORG 0x03EAF2
+		BL(_prMinFromR5)
+	
+	ORG 0x03EB06
+		BL(_prMaxFromR5)
+	
+	ORG 0x03EF24 // Some AI Stuff
+		BL(_prMinFromActiveUnit)
+	
+	ORG 0x03EF30 // Some AI Stuff
+		BL(_prMaxFromActiveUnit)
+	
+	ORG 0x0412DE // Some Nightmare AI Stuff
+		BL(_prMinFromActiveUnit)
+	
+	ORG 0x0412EA // Some Nightmare AI Stuff
+		BL(_prMaxFromActiveUnit)
+	
+	ORG 0x04145C // Some Nightmare AI Stuff
+		BL(_prMinFromActiveUnit)
+	
+	ORG 0x041468 // Some Nightmare AI Stuff
+		BL(_prMaxFromActiveUnit)
+	
+	ORG 0x04A1F2
+		BL(_prMinFromActiveUnit)
+	
+	ORG 0x04A1FC
+		BL(_prMaxFromActiveUnit)
+	
+	ORG 0x04A212
+		BL(_prMinFromActiveUnit)
+	
+	ORG 0x04A21C
+		BL(_prMaxFromActiveUnit)
+	
+	ORG 0x04A232
+		BL(_prMinFromActiveUnit)
+	
+	ORG 0x04A23E
+		BL(_prMaxFromActiveUnit)
+	
+	ORG 0x04A27A
+		BL(_prMinFromSomewhereWeird)
+	
+	ORG 0x04AF2C
+		SHORT 0xB530 // push {r4-r5, lr}
+		SHORT 0x1C0C // mov r4, r1
+		SHORT 0x1C20 // mov r0, r4
+		BL(0x016B28) // bl Unit_GetEquippedWeapon
+		SHORT 0x1C05 // mov r5, r0
+		SHORT 0xD00A // beq Return1
+		SHORT 0x1C21 // mov r1, r4
+		BL(0x017684) // bl Item_GetMaxRange
+		SHORT 0x2801 // cmp r0, #1
+		SHORT 0xD005 // beq Return1
+		SHORT 0x1C28 // mov r0, r5
+		SHORT 0x1C21 // mov r1, r4
+		BL(0x01766C) // bl Item_GetMinRange
+		SHORT 0x2801 // cmp r0, #1
+		SHORT 0xDC01 // bgt Return2
+		SHORT 0x2001 // mov r0, #1 @ Return1
+		SHORT 0xE000 // b End
+		SHORT 0x2002 // mov r0, #2 @ Return2
+		SHORT 0xBD30 // pop {r4-r5, pc} @ End
+
+	ORG 0x04B02E // No clue
+		BL(_prMinFromActiveUnit)
+	
+	ORG 0x04B03C // No clue
+		BL(_prMaxFromActiveUnit)
+	
+	_prMinFromActiveUnit:
+	_prMaxFromActiveUnit:
+	
+	_prMinFromR5:
+	_prMaxFromR5:
+	
+	_prMaxFromR6:
+	
+	_prMinFromSomewhereWeird:
+	_prMaxFromSomewhereWeird:
+		/*
+			ldr r1, =#0x3001818
+			ldr r4, =#0x203DD95
+			ldrb r0, [r4]
+			add  r0, r1
+			ldrb r0, [r0]
+			
+			bl Unit_GetStruct
+		*/
+POP
+
+#endif // HAX_PROPER_RANGE_GETTERS_EVENT
