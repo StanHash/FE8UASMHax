@@ -1,6 +1,7 @@
 .thumb
 .include "_Definitions.h.s"
 
+@ .org 0x025ED0
 @ Replaced:
 	@ LDR     R0, [R4]
 	@ BL      GetUnitMagBy2Range
@@ -37,6 +38,8 @@
 	
 	mov r0, r5
 	mov r1, r6
+	
+	.short 0xF800
 	
 	pop {pc}
 

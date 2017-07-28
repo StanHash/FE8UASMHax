@@ -13,8 +13,16 @@
 	ORG FreeSpace
 #endif
 
-PUSH; ORG 0x025EE4
-	BL(0x02506C) // replace call to "for each unit in range" by call to "for each unit in mag/2 range"
+{
+PUSH
+	ORG 0x025ED0
+		callHack_r3(_prPhysicFix)
+		SHORT 0 0 0
 POP
+
+ALIGN 4
+_prPhysicFix:
+	#incbin "asm/Hook.bin"
+}
 
 #endif // PHYSIC_TARGET_FIX_EVENT
