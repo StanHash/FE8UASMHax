@@ -7,6 +7,8 @@
 #define FreeSpace         0xB2A610 // Size: 0xD59F0
 #define FreeSpace_BLRange 0x1C1EC0
 
+#include "MSG/HelperDefinitions.event" // *may* be used by stuff in BL-Range
+
 ORG FreeSpace_BLRange
 	#define inBLRange
 		
@@ -23,11 +25,13 @@ ORG FreeSpace
 	
 	// #include "StatGetters/_InstallGetters.event"
 	
+	#include "ProperRangeGetters/ProperRangeGetters.event"
+
 	// #include "LolStats/LolStats.event"
 	// #include "EvilRN/EvilRN.event"
 	#include "HeroesMovement/HeroesMovement.event"
 
-	#include "RangeFix/RangeDisplayFix_Small.event"
+	// #include "RangeFix/RangeDisplayFix_Small.event"
 	
 	// #include "EveryonesTheSame/EveryonesTheSame.event"
 	
