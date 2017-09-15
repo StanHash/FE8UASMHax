@@ -11,7 +11,9 @@
 	.short 0xF800
 .endm
 
-@ (rd != rox)) MUST be true
+@ I call "pairs" 32 bit values that hold two 16 bit parts, suitable for being stored in only one register
+
+@ (rd != rox) MUST be true
 .macro _MakePair rd, rs1, rs2, rox=r3
 	lsl \rox, \rs1, #16 @ clearing top 16 bits of part 1
 	lsl \rd,  \rs2, #16 @ clearing top 16 bits of part 2
@@ -28,16 +30,32 @@
 	asr \rd, \rs, #16 @ shifting second part of pair (erasing first part in the process)
 .endm
 
-@ NOTE: not sure if working atm
-.macro _MakeSign rd, rs, rox=r3
-	neg \rox, \rs
-    asr \rox, \rox, #31
-    asr \rd,  \rs,  #31
-    sub \rd,  \rox
+@ unsigned variant
+
+.macro _MakeUPair rd, rs1, rs2
+	lsl \rd, \rs2, #16
+	orr \rd, \rs1
 .endm
+
+.macro _GetUPairFirst rd, rs
+	lsl \rd, \rs, #16 @ clearing second part of pair
+	lsr \rd, \rd, #16 @ shifting back
+.endm
+
+.macro _GetUPairSecond rd, rs
+	lsr \rd, \rs, #16 @ shifting second part of pair (erasing first part in the process)
+.endm
+
+@ ==================================
+@ ============ ROUTINES ============
+@ ==================================
 
 .set prSVCModulo,                0x080D1684 @ arguments: r0 = left, r1 = right; Returns: r0 = left % right
 .set prSVCDivide,                0x080D167C @ arguments: r0 = left, r1 = right; Returns: r0 = left / right, r1 = left % right
+.set prSVCLZSSUncomp16bit,       0x080D1690 @ arguments: r0 = source, r1 = dest (can be VRAM!)
+.set prSVCLZSSUncomp8bit,        0x080D1694 @ arguments: r0 = source, r1 = dest (cannot be VRAM :( )
+.set prSVCMemcopyFast,           0x080D1674 @ arguments: r0 = source, r1 = dest, r2 = size/mode
+.set prSVCMemcopy,               0x080D1678 @ arguments: r0 = source, r1 = dest, r2 = size/mode
 
 .set prPlaySound,                0x080D01FC @ arguments: r0 = sound id to play
 
@@ -69,9 +87,13 @@
 .set prUnit_GetRangeMap,         0x080171E8 @ arguments: r0 = Unit Struct pointer, r1 = Item Slot Index (-1 for all); returns: r0 = range mask
 .set prUnit_CanUseItem,          0x08028870 @ arguments: r0 = Unit Struct pointer, r1 = Item Short; returns = 1 if unit can use item, 0 otherwise
 
+.set prUnit_GetSpeed,            0x08019210 @ arguments: r0 = Unit Struct pointer; returns: r0 = Unit Computed Speed
 .set prUnit_GetDefense,          0x08019250 @ arguments: r0 = Unit Struct pointer; returns: r0 = Unit Computed Defense
 
-.set prItem_GetIndex,            0x080174EC @ arguments: r0 = item short; returns: r0 = item index (= (item & 0xFF))
+.set prBattleUnit_ShouldWRankUp, 0x0807A7D8 @ arguments: r0 = Battle Unit Struct pointer; returns: r0 = 1 if it needs to be shown
+.set prBattleUnit_ShouldWpnBroke, 0x0807A770 @ arguments: r0 = Battle Unit Struct pointer; returns: r0 = 1 if it needs to be shown
+
+.set prItem_GetIndex,            0x080174EC @ arguments: r0 = Item Short; returns: r0 = Item Index (= (Item Short & 0xFF))
 .set prItem_GetMight,            0x080175DC @ arguments: r0 = Item Short; returns: r0 = Might
 .set prItem_GetAttributes,       0x0801756C @ arguments: r0 = Item Short; returns: r0 = Attribute Word
 .set prItem_GetWType,            0x08017548 @ arguments: r0 = Item Short; returns: r0 = WType
@@ -80,8 +102,10 @@
 .set prItem_GetMinRange,         0x0801766C @ arguments: r0 = Item Short; returns: r0 = Item Min Range
 .set prItem_GetMaxRange,         0x08017684 @ arguments: r0 = Item Short; returns: r0 = Item Min Range
 .set prItem_GetRangeMask,        0x080170D4 @ arguments: r0 = Item Short; returns: r0 = Item Range Mask
-
-.set prGetTextInBuffer,          0x0800A240 @ arguments: r0 = text id; returns: r0 = buffer in which the text now is
+.set prItem_GetNameString,       0x080174F4 @ arguments: r0 = Item Short; returns: r0 = Item Name string pointer
+.set prItem_GetSomeString,       0x0801618C @ arguments: r0 = Item Short, r1 = Capitalize the S?; returns: r0 = "Some"/"A" Item Name string pointer
+.set prItem_GetIconIndex,        0x08017700 @ arguments: r0 = Item Short; returns: r0 = Icon Id for item
+.set prItem_IsItem,              0x08017054 @ arguments: r0 = Item Short; returns: r0 = 0 if item is weapon or staff
 
 .set prBottomHelpDisplay_New,    0x08035708 @ arguments: r0 = parent 6C, r1 = pointer to text IN BUFFER
 .set prBottomHelpDisplay_EndAll, 0x08035748 @ none
@@ -91,9 +115,34 @@
 .set prMoveRange_ShowGfx,        0x0801DA98 @ arguments: r0 = type bitfield (&1 = Move Blue Squares, &2 = Range Red Squares, &4 = Range Green Squares, &16 = Range Blue Squares)
 .set prMoveRange_HideGfx,        0x0801DACC @ none
 
+.set prMakeUIWindowTileMap,      0x0804E368 @ arguments: r0 = x, r1 = y, r2 = width?, r3 = height???, [sp+0] = style??????
+
+.set prFont_SetupForUI,          0x08003CB8 @ arguments: r0 = allocated font struct, r1 = VRAM root, r2 = size, r3 = palette Index
+
+.set prText_Init,                0x08003D5C @ arguments: r0 = allocated text struct pointer (8 bytes), r1 = size (in tiles)
+.set prText_SetCursor,           0x08003E54 @ arguments: r0 = text struct pointer, r1 = cursor pos (in pixels)
+.set prText_AdvanceCursor,       0x08003E58 @ arguments: r0 = text struct pointer, r1 = cursor pos offset (in pixels)
+.set prText_SetColor,            0x08003E60 @ arguments: r0 = text struct pointer, r1 = color index
+.set prText_GetColor,            0x08003E64 @ arguments: r0 = text struct pointer; returns: r0 = color index
+.set prText_SetParameters,       0x08003E68 @ arguments: r0 = text struct pointer, r1 = X Cursor, r2 = color index
+.set prText_AppendString,        0x08004004 @ arguments: r0 = text struct pointer, r1 = string pointer
+.set prText_Draw,                0x08003E70 @ arguments: r0 = text struct pointer, r1 = root output tile pointer
+
+.set prString_GetTextWidth,      0x08003EDC @ arguments: r0 = string pointer; returns: r0 = pixel width of string for current font
+.set prString_FromNumber,        0x08014334 @ arguments: r0 = number, r1 = output buffer; returns: r0 = size of string/number of digits
+
+@ KEPT FOR BACKWARDS COMPAT
+.set prGetTextInBuffer,          0x0800A240 @ arguments: r0 = text id; returns: r0 = string pointer (actually constant)
+.set prString_FromIdToStdBuffer, 0x0800A240 @ arguments: r0 = text id; returns: r0 = string pointer (actually constant)
+
 .set prSetCursorMapPosition,     0x08015BBC @ arguments: r0 = x, r1 = y
 
 .set prBeginCameraMovement,      0x08015E0C @ arguments: r0 = parent 6C (or 0 if none), r1 = map x, r2 = map y
+
+.set prPopup_MakeSimple,         0x08011474 @ arguments: r0 = Definition, r1 = Time, r2 = Win Style, r3 = Parent 6C
+.set prPopup_SetShortParam,      0x0801145C @ arguments: r0 = Parameter (most likely item or wrank)
+.set prPopup_SetNumberParam,     0x08011468 @ arguments: r0 = Parameter
+.set prPopup_SetUnitParam,       0x08011450 @ arguments: r0 = Unit Parameter
 
 .set prMOVEUNIT_NewForMapUnit,   0x08078464 @ arguments: r0 = pointer to Unit Struct; returns: r0 = new MOVEUNIT pointer
 .set prMOVEUNIT_SetMovement,     0x08078790 @ arguments: r0 = pointer to MOVEUNIT, r1 = pointer to movement buffer
@@ -123,23 +172,44 @@
 .set prTCS_Draw,                 0x080092BC @ arguments: r0 = TCS, r1 = Display X, r2 = Display Y
 .set prTCS_Free,                 0x080092A4 @ arguments: r0 = TCS
 
-.set prHandlePPCursorMovement,   0x0801C8AC
+.set prAIS_New,                  0x08004F48 @ arguments: r0 = Frame Data pointer, r1 = Depth (or Priority?); returns: r0 = AIS
+.set prAIS_Free,                 0x08005004 @ arguments: r0 = AIS
+
+.set prCopyToOAM_Secondary,      0x08002BB8 @ arguments: r0 = x, r1 = y, r2 = OAM data pointer, r3 = root obj tile index
+
+.set prIcon_LoadPalette,         0x080035D4 @ arguments: r0 = Which? (there's 2: 0 & 1), r1 = Output palette Index
+.set prIcon_LoadOBJGfx,          0x0800372C @ arguments: r0 = icon id, r1 = output root tile index
+
+.set prBG_SetPosition,           0x0800148C @ arguments: r0 = BG index, r1 = X, r2 = Y
+.set prBG_EnableByMask,          0x08001FAC @ arguments: r0 = BG Mask
+.set prBG_Enable,                0x08001FBC @ arguments: r0 = BG index
+
+.set prBG1_Clear,                0x08055188 @ none
+
+.set prHandlePPCursorMovement,   0x0801C8AC @ none?
 
 .set prCall_Future,              0x080148E4 @ arguments: r0 = routine to call, r1 = passed argument, r2 = time in frames to wait before call
 
 .set prSaveData_GetSRAMLocation, 0x080A3064 @ arguments: r0 = Save Slot Index (0-2 for standard save, 3-4 for suspends, 5-6 unknown); returns: SRAM Location
 .set prSaveData_SaveToSRAM,      0x080D184C @ arguments: r0 = Input Data Ptr, r1 = Output SRAM pointer, r2 = Size (bytes)
 
-.set ppActiveUnit,               0x03004E50
+@ =================================
+@ =========== RAM STUFF ===========
+@ =================================
+
+.set ppActiveUnit,               0x03004E50 @ Active Unit
+.set ppSubjectUnit,              0x02033F3C @ I don't remeber where I found this?
 
 .set pBattleUnitInstiagator,     0x0203A4EC
 .set pBattleUnitTarget,          0x0203A56C
+
+.set pBattleRoundArray,          0x0203A5EC
+.set ppBattleCurrentRound,       0x0203A608
 
 .set pKeyStatusBuffer,           0x02024CC0
 .set pGameDataStruct,            0x0202BCB0
 .set pChapterDataStruct,         0x0202BCF0
 .set pActionStruct,              0x0203A958
-@ .set ppSubjectUnit,              0x02033F3C @ I don't remeber where I found this?
 
 .set pGenericBuffer,             0x02020188 @ Used while saving among other cases
 
@@ -151,5 +221,21 @@
 .set ppRangeMapRows,             0x0202E4E4
 .set ppFogMapRows,               0x0202E4E8
 .set ppOtherMoveMapRows,         0x0202E4F0
+
+.set pBG0TileMap,                0x02022CA8
+.set pBG1TileMap,                0x020234A8
+.set pBG2TileMap,                0x02023CA8
+.set pBG3TileMap,                0x020244A8
+
+.set pPopupShortArgument,        0x030005F4
+.set ppPopupUnit,                0x030005F0
+.set pPopupNumber,               0x030005F8
+
+.set pp6CBattlePopup,            0x02020140
+.set pBattlePopupEnded,          0x02020144
+
+@ ===================================
+@ ============ ROM STUFF ============
+@ ===================================
 
 .set p6C_GBToUnitMenu,           0x0859B600

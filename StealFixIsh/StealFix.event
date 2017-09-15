@@ -1,0 +1,18 @@
+#ifndef STEAL_FIX_HAX
+#define STEAL_FIX_HAX
+
+PUSH
+	#ifdef _FE8_
+		ORG 0x025BA0
+			#incbin "asm/AddAsTarget_IfCanStealFrom_FE8.bin"
+	#else
+		#ifdef _FE7_
+			ORG 0x0244AC
+				#incbin "asm/AddAsTarget_IfCanStealFrom_FE7.bin"
+		#else
+			ERROR FE7 and FE8 only
+		#endif
+	#endif
+POP
+
+#endif // STEAL_FIX_HAX

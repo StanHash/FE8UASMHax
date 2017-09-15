@@ -8,7 +8,7 @@ FreeSelect6C_Init:
 	
 	mov r4, r0
 	
-	_blh prLockGameLogic
+	@ _blh prLockGameLogic
 	
 	ldr r0, =pTCS_PositionSelectCursor
 	mov r1, #0

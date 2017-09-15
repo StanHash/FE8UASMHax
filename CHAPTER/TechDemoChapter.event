@@ -1,0 +1,83 @@
+#ifndef TECHDEMO_CHAPTER_EVENT
+#define TECHDEMO_CHAPTER_EVENT
+
+#include "eastdlib.event"
+#include "_CommonEvents.event"
+
+EventPointerTable(0x07, pChapterDefinition)
+EscapePointPointerTable(0, pCh1EscapePoints)
+
+pCh1EscapePoints:
+	EscapePoint(1, 1, 5) // 5 = Disappear without moving
+EscapePointEnd
+
+pChapterDefinition:
+	POIN pTurnEvents // turn events
+	POIN pCharEvents // talk events
+	POIN pLocaEvents // location events
+	POIN pActionEvents // "misc" events
+	POIN pNoEvents pNoEvents pNoEvents pNoEvents // dunno & tutorial
+	POIN pNoTraps pNoTraps // traps
+	POIN puAlliedUnits puAlliedUnits // Prep screen slots
+	POIN $0 $0 $0 // Skirmish allies
+	POIN $0 $0 $0 // Skirmish enemies
+	POIN peStartScene peEndScene
+
+pTurnEvents:
+	// nothing
+END_MAIN
+
+pCharEvents:
+	// still nothing
+END_MAIN
+
+pLocaEvents:
+	// boring chapter/10
+END_MAIN
+
+pActionEvents:
+	CauseGameOverIfLordDies
+	DefeatBoss(peEndScene)
+END_MAIN
+
+peStartScene:
+	VCWF 6
+	
+	LOAD1 0x00 puAlliedUnits
+	ENUN
+	
+	LOAD1 0x00 puEnemyUnits
+	ENUN
+	
+	SVAL r3 0x4200
+	GIVEITEMTOMAIN 0
+	
+	NoFade
+ENDA
+
+peEndScene:
+	MNC2 1
+	NoFade
+ENDA
+
+puAlliedUnits:
+	UNIT Eirika  Bishop_F 0 Level(10, Ally, True) [0, 0] 0b 0x00 0 0x00 [Warp, TorchStaff, Rescue, Lightning] NoAI
+	UNIT Seth    Knight   0 Level(20, Ally, True) [1, 0] 0b 0x00 0 0x00 [SlimLance, IronSword, KnightCrest, Vulnerary] NoAI
+	UNIT Gilliam Thief    0 Level(10, Ally, True) [2, 0] 0b 0x00 0 0x00 [SlimSword, IronSword] NoAI
+UNIT
+
+puEnemyUnits:
+	UNIT ONeill Brigand  0 Level(15, Enemy, True) [14, 9] 0b 0x00 0 0 [IronAxe]   PursueWithoutHeedAI
+	UNIT 0x80   Myrmidon 0 Level(15, Enemy, True) [1,  3] 0b 0x00 0 0 [Vulnerary, Vulnerary] LootingThiefAI
+UNIT
+
+PUSH
+	ORG (0x809B10 + IronSword * 0x24 + 0x0C)
+		POIN pIronSwordStatBonuses
+POP
+
+pIronSwordStatBonuses:
+	BYTE 15 15 15 15 15 15 15 15 15 15 15 15 15 15 15 15 15 15 // idk
+ALIGN 4
+
+#endif // TECHDEMO_CHAPTER_EVENT

@@ -1,0 +1,150 @@
+#ifndef HAX_LONG_DISTANCE_SUMMON_EVENT
+#define HAX_LONG_DISTANCE_SUMMON_EVENT
+
+#ifndef _FE8_
+	ERROR LONGSUMMON is for FE8
+#endif // _FE8_
+
+#include "Tools/Tool Helpers.txt"
+
+#ifndef FreeSpace
+	#define FreeSpace 0xB2A610 // Size: 0xD59F0
+	ORG FreeSpace
+	
+	#include "../_FE8EssentialFixes.event"
+#endif
+
+#include "../_StanHaxCommon/StanCommonASM.event"
+
+#ifndef ACTION_SUMMON
+	#define ACTION_SUMMON 0x07
+#endif
+
+#define textLolCommandName 0x62 // Replaces Unused "bear"   Text, Change this to a textprocess generated definition
+#define textLolCommandDesc 0x63 // Replaces Unused "normal" Text, Change this to a textprocess generated definition
+
+#define textLolBottomHelp  0x64 // Replaces Unused "strong" Text, Change this to a textprocess generated definition
+
+PUSH
+	ORG (0x0288B0+3*4)
+		POIN prTestStaff_Usability
+	
+	ORG (0x028E8C+3*4)
+		POIN prTestStaff_Effect
+POP
+
+ALIGN 4
+prTestStaff_Usability:
+	#incbin "asm/TestStaff_Usability.bin"
+
+ALIGN 4
+prTestStaff_Effect:
+	#incbin "asm/TestStaff_Effect.bin"
+	POIN (prLongSummonCommand_Effect+1)
+
+ALIGN 4
+prLongSummonCommand_Usability:
+	rConstant(1)
+
+ALIGN 4
+prLongSummonCommand_Effect:
+	#incbin "asm/Effect_LongSelect.bin"
+	POIN (prFreeSelect6C_New+1)
+	POIN pRewarpFreeSelectDef
+
+ALIGN 4
+prLongSummonSelect_OnInit:
+	#incbin "asm/LongSelect_OnInit.bin"
+	WORD textLolBottomHelp
+
+ALIGN 4
+prLongSummonSelect_OnSelection:
+	#incbin "asm/LongSelect_OnSelection.bin"
+	WORD ACTION_SUMMON
+
+ALIGN 4
+prLongSummonSelect_OnCancel:
+	#incbin "asm/LongSelect_OnCancel.bin"
+
+ALIGN 4
+prLongSummonSelect_OnDelete:
+	#incbin "asm/LongSelect_OnDelete.bin"
+
+ALIGN 4
+pRewarpFreeSelectDef:
+	POIN (prLongSummonSelect_OnInit+1)      // OnInit
+	POIN (prLongSummonSelect_OnDelete+1)    // OnDelet
+	POIN (prLongSummonSelect_OnSelection+1) // OnAPress
+	POIN (prLongSummonSelect_OnCancel+1)    // OnBPress
+	WORD 0 // OnRPress
+
+// ====================================================================================================================================================
+// The rest of the file sets up the unit menu table for demonstration purposes. Feel free to change everything to accomodate your own buildfile project
+// ====================================================================================================================================================
+
+#include "../_UnitMenuDefinitions.event"
+
+// Here is where I insert the text, you probably want to do that with textprocess yourself
+
+setText(textLolCommandName, psPivotCommandName)
+psPivotCommandName:
+	BYTE 0x20 // space for align
+	String(lol)
+	BYTE 0
+
+setText(textLolCommandDesc, psPivotCommandDesc)
+psPivotCommandDesc:
+	String(Summons Bread.)
+	BYTE 0
+
+setText(textLolBottomHelp, psRepositionCommandName)
+psRepositionCommandName:
+	BYTE 0x20 // space for align
+	String(Select where to summon bread)
+	BYTE 0
+
+PUSH; ORG 0x59D1F8 // Repoint Unit Menu Commands
+	POIN pUnitMenuCommands
+POP
+
+ALIGN 4
+pUnitMenuCommands:
+	// MenuCommand(textLolCommandName, textLolCommandDesc, NormalText, prLongSummonCommand_Usability, prLongSummonCommand_Effect)
+	UM_Seize
+	UM_Attack
+	UM_Attack_B
+	UM_Staff
+	UM_Ride
+	UM_Exit
+	UM_Play
+	UM_Dance
+	UM_Steal
+	UM_Summon
+	UM_Summon_DK
+	UM_Pick
+	UM_Talk
+	UM_Support
+	UM_Visit
+	UM_Chest
+	UM_Door
+	UM_Armory
+	UM_Vendor
+	UM_Secret
+	UM_Arena
+	UM_Rescue
+	UM_Give
+	UM_Take
+	UM_Drop
+	// MenuCommand(textShoveCommandName,      textShoveCommandDesc,      NormalText, prShoveCommand_Usability,      prShoveCommand_Effect)
+	// MenuCommand(textSmiteCommandName,      textSmiteCommandDesc,      NormalText, prSmiteCommand_Usability,      prSmiteCommand_Effect)
+	// MenuCommand(textPivotCommandName,      textPivotCommandDesc,      NormalText, prPivotCommand_Usability,      prPivotCommand_Effect)
+	// MenuCommand(textRepositionCommandName, textRepositionCommandDesc, NormalText, prRepositionCommand_Usability, prRepositionCommand_Effect)
+	// MenuCommand(textSwapCommandName,       textSwapCommandDesc,       NormalText, prSwapCommand_Usability,       prSwapCommand_Effect)
+	UM_Item
+	UM_Trade
+	UM_Supply
+	UM_Wait
+UM_Separator
+
+
+#endif // HAX_LONG_DISTANCE_SUMMON_EVENT

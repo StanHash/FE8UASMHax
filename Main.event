@@ -20,27 +20,52 @@ ORG FreeSpace
 	#include "_FE8EssentialFixes.event"
 	#include "_StanHaxCommon/StanCommonASM.event"
 
-	// #include "MSG/InstallCore.event"
-	// #include "MSG/InstallHelpers.event"
+	#include "MSG/InstallCore.event"
+	#include "MSG/InstallHelpers.event"
 	
-	// #include "StatGetters/_InstallGetters.event"
+	#include "StatGetters/_InstallGetters.event"
 	
 	#include "ProperRangeGetters/ProperRangeGetters.event"
 
+	#include "IconDisplayRedone/IconDisplayRedone.event"
+	#include "PopupRework/PopupRework.event"
+	
+	#include "StealFixIsh/StealFix.event"
+	
+	#include "CHAPTER/TechDemoChapter.event"
+	
 	// #include "LolStats/LolStats.event"
+	// #include "HeroesMovement/HeroesMovement.event"
 	// #include "EvilRN/EvilRN.event"
-	#include "HeroesMovement/HeroesMovement.event"
 
 	// #include "RangeFix/RangeDisplayFix_Small.event"
 	
 	// #include "EveryonesTheSame/EveryonesTheSame.event"
 	
+	// #include "LongDistanceSummon/LongDistanceSummon.event"
+	
 	// #include "_Testing/Chapter.event"
 	
 	// #include "SpellAnimTest/SpellAnimTest.event"
 	
-	// #include "Rewarp/Rewarp.event"
+	// #include "_TestingRewarp/Rewarp.event"
 	// #include "_UnitMenuDefinitions.event"
+	
+	// Save Shit
+	
+	// ORG 0x0A30B8
+		// WORD 0x3FC4
+	
+	// ORG 0x0A30CC
+		// WORD 0x3FC4
+	
+	// Sound Shit
+	
+	// ORG 0xD01FE
+		// BYTE 0x5A 0x20
+	
+	// ORG 0xD0204
+		// BYTE 0xC0 0x00
 
 
 #endif // MAIN_EVENT

@@ -75,6 +75,20 @@ HandleCode:
 	mov r0, r4
 	_blh pr6C_BreakLoop
 	
+	mov r0, r4
+	
+	ldr r3, [r0, #0x2C]
+	ldr r3, [r3, #0x04]
+	
+	cmp r3, #0
+	beq NoCall
+	
+	bl BXR3
+	
+NoCall:
+	ldr r0, [r4, #0x30]
+	_blh prTCS_Free
+	
 	b End @ No need to draw, so go directly to end
 	
 NoDelete:

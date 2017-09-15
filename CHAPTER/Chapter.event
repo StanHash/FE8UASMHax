@@ -1,0 +1,12 @@
+#ifndef CHAPTER_CHAPTER_EVENT
+#define CHAPTER_CHAPTER_EVENT
+
+#include "eastdlib.event"
+
+{
+
+#include ""
+
+}
+
+#endif // CHAPTER_CHAPTER_EVENT

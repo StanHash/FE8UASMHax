@@ -1,0 +1,19 @@
+#ifndef COMMON_EVENTS_EVENT
+#define COMMON_EVENTS_EVENT
+
+ALIGN 4
+
+pNoTraps:
+ENDTRAP
+
+ALIGN 4
+
+pNoEvents:
+END_MAIN
+
+ALIGN 4
+
+pNothing:
+WORD 0
+
+#endif // COMMON_EVENTS_EVENT

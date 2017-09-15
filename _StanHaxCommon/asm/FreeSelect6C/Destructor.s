@@ -6,20 +6,19 @@ FreeSelect6C_Destructor:
 	
 	mov r4, r0
 	
-	ldr r3, [r0, #0x2C]
-	ldr r3, [r3, #0x04]
+	@ ldr r3, [r0, #0x2C]
+	@ ldr r3, [r3, #0x04]
 	
-	cmp r3, #0
-	beq NoCall
+	@ cmp r3, #0
+	@ beq NoCall
 	
-	bl BXR3
+	@ bl BXR3
 	
-NoCall:
-	ldr r0, [r4, #0x30]
-	_blh prTCS_Free
+@ NoCall:
+	@ ldr r0, [r4, #0x30]
+	@ _blh prTCS_Free
 	
-	_blh prMoveRange_HideGfx
-	_blh prUnlockGameLogic
+	@ _blh prMoveRange_HideGfx
 
 	pop {r4}
 	

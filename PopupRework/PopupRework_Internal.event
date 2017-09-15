@@ -1,0 +1,389 @@
+#ifndef POPUP_REWORK_HAX_EVENT
+#define POPUP_REWORK_HAX_EVENT
+
+#ifndef _FE8_
+	ERROR not FE8 etc
+#endif
+
+#include "Extensions/Hack Installation.txt"
+#include "eastdlib.event"
+
+#ifndef FreeSpace
+	#define FreeSpace 0xB2A610
+	ORG FreeSpace
+#endif
+
+#ifndef POPUP_COMMAND_COUNT
+	#define POPUP_COMMAND_COUNT 0x10 // Little extra space because why not
+#endif
+
+#include "../_StanHaxCommon/_6CDefinitions.event"
+
+#include "PopupDefinitions.event"
+
+{
+
+// ===============
+// COMMON INTERNAL
+// ===============
+
+{
+
+// =====================
+// ANIMS OFF POPUP STUFF
+// =====================
+
+PUSH
+	ORG 0x010F38
+		replaceWithHack(_prPopupGetLen+1)
+	
+	ORG 0x011270
+		replaceWithHack(_prPopupDraw+1)
+	
+	ORG 0x59222C // That's part of a 6C
+		POIN (_prPopupIcons_UpdateObjs+1)
+POP
+
+ALIGN 4
+_prPopupDraw:
+	#incbin "asm/AnimsOff/Popup_Draw.bin"
+	POIN (_prPopupDrawComponents+1)
+	POIN (_prPopup_AddIcon+1)
+
+ALIGN 4
+_prPopup_AddIcon:
+	#incbin "asm/AnimsOff/Popup_AddIcon.bin"
+
+ALIGN 4
+_prPopupIcons_UpdateObjs:
+	#incbin "asm/AnimsOff/PopupIcons6C_UpdateObj.bin"
+
+PUSH
+	// My first ever hook into 6C code :)
+	ORG 0x9A3600
+		_6C_NEW_CHILD_BLOCKING(_p6CAnimsOffPostBattlePopupManager)
+		_6C_JUMP(0x9A3620)
+POP
+
+ALIGN 4
+_prManagePostBattlePopups_Init:
+	#incbin "asm/AnimsOff/ManagePostBattlePopups_Init.bin"
+	POIN pBattlePopupShowupTable
+
+ALIGN 4
+_prManagePostBattlePopups:
+	#incbin "asm/AnimsOff/ManagePostBattlePopups.bin"
+
+ALIGN 4
+_p6CAnimsOffPostBattlePopupManager:
+	_6C_CALL_ROUTINE(_prManagePostBattlePopups_Init+1)
+
+_6C_LABEL(0)
+	_6C_CALL_ROUTINE(_prManagePostBattlePopups+1)
+	_6C_SLEEP(8)
+	_6C_GOTO(0)
+
+_6C_LABEL(1)
+	_6C_END
+
+}
+
+{
+
+// ====================
+// ANIMS ON POPUP STUFF
+// ====================
+
+PUSH
+	ORG 0x075F18
+		replaceWithHack(_prPopupWrapper_New+1)
+POP
+
+_prPopupWrapper_New:
+	#incbin "asm/AnimsOn/Wrapper6C_New.bin"
+	POIN _p6CBattlePopupWrapper
+	POIN pBattlePopupShowupTable
+	POIN pPromotionPopupShowupTable
+
+ALIGN 4
+_prPopupWrapper_Loop:
+	#incbin "asm/AnimsOn/Wrapper6C_Loop.bin"
+	POIN (_prBattlePopup_New+1)
+
+ALIGN 4
+_prPopupWrapper_Cleanup:
+	#incbin "asm/AnimsOn/Wrapper6C_Cleanup.bin"
+
+ALIGN 4
+_p6CBattlePopupWrapper:
+	_6C_SLEEP(10)
+
+_6C_LABEL(0)
+	_6C_LOOP_ROUTINE(_prPopupWrapper_Loop+1)
+	_6C_SLEEP(8)
+	_6C_GOTO(0)
+
+_6C_LABEL(1)
+	_6C_CALL_ROUTINE(_prPopupWrapper_Cleanup+1)
+	_6C_END
+
+ALIGN 4
+_prBattlePopup_New:
+	#incbin "asm/AnimsOn/BattlePopup6C_New.bin"
+	POIN _p6CBattlePopup
+	POIN (_prBattlePopup_SetIcon+1)
+
+ALIGN 4
+_prBattlePopup_Draw:
+	#incbin "asm/AnimsOn/BattlePopup6C_Draw.bin"
+	POIN (_prPopupGetLen+1)
+	POIN (_prPopupDrawComponents+1)
+
+ALIGN 4
+_prBattlePopup_Wait:
+	#incbin "asm/AnimsOn/BattlePopup6C_Wait.bin"
+
+ALIGN 4
+_prBattlePopup_SetIcon:
+	#incbin "asm/AnimsOn/BattlePopup6C_SetIcon.bin"
+
+ALIGN 4
+_p6CBattlePopup:
+	_6C_YIELD
+	
+	_6C_CALL_ROUTINE(_prBattlePopup_Draw+1)
+	_6C_LOOP_ROUTINE(_prBattlePopup_Wait+1)
+	
+	_6C_END
+
+}
+
+ALIGN 4
+_prPopupGetLen:
+	#incbin "asm/Common/ComputeLen.bin"
+	POIN _praPopupLengthRoutines
+
+ALIGN 4
+_prPopupDrawComponents:
+	#incbin "asm/Common/DrawComponents.bin"
+	POIN _praPopupDrawRoutines
+}
+
+/*
+
+Ok so, now we're inserting replacement for *all* the vanilla popup code handlers in the form of routines.
+the format for those routines is:
+
+Length Routines:
+	Arguments: r0 = Popup 6C, r1 = Code Argument
+	Returns: r0 = length of component
+
+Draw Routines:
+	Arguments: r0 = Popup 6C, r1 = Text Struct, r2 = Code Argument
+	Returns: nothing (Text Struct is expected to be messed with)
+
+Here are the Popup 6C fields you are supposed to care about:
+	2C | word  | pointer to definition
+	42 | byte  | obj palette id to use for icon palette
+	48 | short | sound id
+	4C | word  | icon adder/setter routine pointer (arguments: r0 = popup 6C, r1 = icon id, r2 = local x)
+
+*/
+
+// CODE 01 : SPACE
+
+ALIGN 4
+_prPopupDraw_Space:
+	#incbin "asm/Space_Draw.bin"
+
+ALIGN 4
+_prPopupLen_Space:
+	#incbin "asm/Space_Len.bin"
+
+// CODE 02 : ITEM NAME
+
+ALIGN 4
+_prPopupDraw_ItemName:
+	#incbin "asm/ItemName_Draw.bin"
+
+ALIGN 4
+_prPopupLen_ItemName:
+	#incbin "asm/ItemName_Len.bin"
+
+// CODE 03 : "Some" ITEM NAME
+
+ALIGN 4
+_prPopupDraw_CSomeItemName:
+	#incbin "asm/CSomeItemName_Draw.bin"
+
+ALIGN 4
+_prPopupLen_CSomeItemName:
+	#incbin "asm/CSomeItemName_Len.bin"
+
+// CODE 04 : "some" ITEM NAME
+
+ALIGN 4
+_prPopupDraw_LSomeItemName:
+	#incbin "asm/LSomeItemName_Draw.bin"
+
+ALIGN 4
+_prPopupLen_LSomeItemName:
+	#incbin "asm/LSomeItemName_Len.bin"
+
+// CODE 05 : UNIT NAME
+
+ALIGN 4
+_prPopupDraw_UnitName:
+	#incbin "asm/UnitName_Draw.bin"
+
+ALIGN 4
+_prPopupLen_UnitName:
+	#incbin "asm/UnitName_Len.bin"
+
+// CODE 06 : STRING ID
+
+ALIGN 4
+_prPopupDraw_StringId:
+	#incbin "asm/StringId_Draw.bin"
+
+ALIGN 4
+_prPopupLen_StringId:
+	#incbin "asm/StringId_Len.bin"
+
+// CODE 07 : STRING POINTER
+
+ALIGN 4
+_prPopupDraw_StringPointer:
+	#incbin "asm/StringPtr_Draw.bin"
+
+ALIGN 4
+_prPopupLen_StringPointer:
+	#incbin "asm/StringPtr_Len.bin"
+
+// CODE 08 : SET COLOR
+
+ALIGN 4
+_prPopupDraw_SetColor:
+	#incbin "asm/SetColor_Draw.bin"
+
+// CODE 09 : ITEM ICON
+
+ALIGN 4
+_prPopupDraw_ItemIcon:
+	#incbin "asm/ItemIcon_Draw.bin"
+
+// CODE 0A : WEAPON TYPE ICON
+
+ALIGN 4
+_prPopupDraw_WTypeIcon:
+	#incbin "asm/WTypeIcon_Draw.bin"
+
+ALIGN 4
+_prPopupLen_Icon:
+	#incbin "asm/Icon_Len.bin"
+
+// CODE 0B : NUMBER
+
+ALIGN 4
+_prPopupDraw_Number:
+	#incbin "asm/Number_Draw.bin"
+
+ALIGN 4
+_prPopupLen_Number:
+	#incbin "asm/Number_Len.bin"
+
+// CODE 0C : SOUND
+
+ALIGN 4
+_prPopupLen_Sound:
+	#incbin "asm/Sound_Len.bin"
+
+#define SetPopupCodeHandlers(aCodeId, aprCodeLen, aprCodeDraw) "PUSH; ORG (_praPopupDrawRoutines+aCodeId*4); POIN aprCodeDraw; ORG (_praPopupLengthRoutines+aCodeId*4); POIN aprCodeLen; POP"
+
+ALIGN 4
+_praPopupDrawRoutines:
+	WORD 0
+	POIN (_prPopupDraw_Space+1)         // Code 01
+	POIN (_prPopupDraw_ItemName+1)      // Code 02
+	POIN (_prPopupDraw_CSomeItemName+1) // Code 03
+	POIN (_prPopupDraw_LSomeItemName+1) // Code 04
+	POIN (_prPopupDraw_UnitName+1)      // Code 05
+	POIN (_prPopupDraw_StringId+1)      // Code 06
+	POIN (_prPopupDraw_StringPointer+1) // Code 07
+	POIN (_prPopupDraw_SetColor+1)      // Code 08
+	POIN (_prPopupDraw_ItemIcon+1)      // Code 09
+	POIN (_prPopupDraw_WTypeIcon+1)     // Code 0A
+	POIN (_prPopupDraw_Number+1)        // Code 0B
+	WORD 0 // Setting Sound             // Code 0C
+	ORG (_praPopupDrawRoutines + POPUP_COMMAND_COUNT*4)
+
+ALIGN 4
+_praPopupLengthRoutines:
+	WORD 0
+	POIN (_prPopupLen_Space+1)         // Code 01
+	POIN (_prPopupLen_ItemName+1)      // Code 02
+	POIN (_prPopupLen_CSomeItemName+1) // Code 03
+	POIN (_prPopupLen_LSomeItemName+1) // Code 04
+	POIN (_prPopupLen_UnitName+1)      // Code 05
+	POIN (_prPopupLen_StringId+1)      // Code 06
+	POIN (_prPopupLen_StringPointer+1) // Code 07
+	WORD 0 // Setting Color            // Code 08
+	POIN (_prPopupLen_Icon+1)          // Code 09
+	POIN (_prPopupLen_Icon+1)          // Code 0A
+	POIN (_prPopupLen_Number+1)        // Code 0B
+	POIN (_prPopupLen_Sound+1)         // Code 0C
+	ORG (_praPopupLengthRoutines + POPUP_COMMAND_COUNT*4)
+
+#define PostBattlePopup(aprInitRoutine, apPopupDefinition, aDuration) "POIN (aprInitRoutine) (apPopupDefinition); WORD (aDuration)"
+// #define PostBattlePopup(aprInitRoutine, apPopupDefinition)            "POIN (aprInitRoutine) (apPopupDefinition); WORD 0"
+#define PostBattlePopupEnd                                            "WORD 0 0 0"
+
+// Now for the routines
+
+ALIGN 4
+prWpnBrokePopup_Init:
+	#incbin "asm/BattleInits/WpnBroke_Init.bin"
+
+ALIGN 4
+prWRankUpPopup_Init:
+	#incbin "asm/BattleInits/WRankUp_Init.bin"
+
+// *inhales*
+
+ALIGN 4
+prSwordGetPopup_Init:
+	#incbin "asm/BattleInits/WRankNew_Init.bin"
+	WORD 0
+prLanceGetPopup_Init:
+	#incbin "asm/BattleInits/WRankNew_Init.bin"
+	WORD 1
+prAxeGetPopup_Init:
+	#incbin "asm/BattleInits/WRankNew_Init.bin"
+	WORD 2
+prBowGetPopup_Init:
+	#incbin "asm/BattleInits/WRankNew_Init.bin"
+	WORD 3
+prStaffGetPopup_Init:
+	#incbin "asm/BattleInits/WRankNew_Init.bin"
+	WORD 4
+prAnimaGetPopup_Init:
+	#incbin "asm/BattleInits/WRankNew_Init.bin"
+	WORD 5
+prLightGetPopup_Init:
+	#incbin "asm/BattleInits/WRankNew_Init.bin"
+	WORD 6
+prDarkGetPopup_Init:
+	#incbin "asm/BattleInits/WRankNew_Init.bin"
+	WORD 7
+
+// phew
+
+ALIGN 4
+pPopup_NewWType:
+	Popup_SetSound(0x5A) // Same sound all the damn time
+	Popup_SetColor(0)    // I'm pretty sure it's default but we never know
+	Popup_StringId(0x0D) // "You can now use [X]"
+	Popup_WTypeIcon      // WType Icon
+Popup_End
+
+#endif // POPUP_REWORK_HAX_EVENT

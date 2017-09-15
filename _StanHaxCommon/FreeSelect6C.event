@@ -14,13 +14,17 @@ p6C_FreeSelect:
 #ifndef NDEBUG
 	_6C_SET_NAME(_psFreeSelect6C_Name)
 #endif
-	_6C_SET_DESTRUCTOR(_prFreeSelect6C_Destruct+1)
 	
+	_6C_CALL_ROUTINE(0x15361) // Block Game Logic
 	_6C_CALL_ROUTINE(_prFreeSelect6C_Init+1)
 	
 	_6C_WHILE_EXISTS(0x59A548) // GENS 6C, camera movement
 	_6C_LOOP_ROUTINE(_prFreeSelect6C_Loop+1)
 	
+	_6C_YIELD
+	
+	_6C_WHILE_EXISTS(0x59A548) // GENS 6C, camera movement
+	_6C_CALL_ROUTINE(0x15371) // Unblock Game Logic
 	_6C_END
 
 #ifndef NDEBUG

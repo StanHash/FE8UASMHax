@@ -1,0 +1,68 @@
+#ifndef POPUP_HAX_EVENT
+#define POPUP_HAX_EVENT
+
+#define POPUP_COMMAND_COUNT 0x10
+
+#include "PopupRework_Internal.event"
+
+/*
+
+What the Popup Rework *does*:
+- Makes Anims On & Anims Off popups use the same input format ("popup definitions", previously used only by Anims Off popups)
+- Allow you to define your own popup codes easily
+- Allow you to easily add popup displays to the end of a battle
+
+
+HOW TO ADD NEW POPUP CODES:
+	use SetPopupCodeHandlers(Code Index, Code Len Getter, Code Drawer)
+	
+	the format for those routines is:
+		Length Routines:
+			Arguments: r0 = Popup 6C, r1 = Code Argument
+			Returns: r0 = length of component
+
+		Draw Routines:
+			Arguments: r0 = Popup 6C, r1 = Text Struct, r2 = Code Argument
+			Returns: nothing (Text Struct is expected to be messed with)
+
+		Here are the Popup 6C fields you are supposed to care about:
+			2C | word  | pointer to definition
+			42 | byte  | obj palette id to use for icon palette
+			48 | short | sound id
+			4C | word  | icon adder/setter routine pointer (arguments: r0 = popup 6C, r1 = icon id, r2 = local x)
+	
+	Codes used by the vanilla Game are: 0 to 0x0C included.
+	There is space allocated for 0x10 Popup codes, more and you will have to edit the definition at the top of this file (POPUP_COMMAND_COUNT).
+
+
+HOW TO ADD NEW BATTLE POPUPS:
+	use PostBattlePopup(Init Routine, Popup Def, Duration) in the tables below
+	
+	The Init routine does two things: it returns 0 or 1 whether the corresponding popup show show up, and in case it should sets up the necessary popup parameters (item, wrank, number, etc).
+	Doesn't take any parameter
+
+	The Popup definition is defined as any other popup (See PopupDefinitions.event).
+
+	The Duration is the duration (in frames) the popup will be on screen. A duration of 0 means that the game will be waiting for user input.
+
+*/
+
+ALIGN 4
+pBattlePopupShowupTable:
+	PostBattlePopup(prWpnBrokePopup_Init+1, 0x592420,  90) // duration was 96 in vanilla but I like roundness
+	PostBattlePopup(prWRankUpPopup_Init+1,  0x592468,  90) // same
+PostBattlePopupEnd
+
+ALIGN 4
+pPromotionPopupShowupTable:
+	PostBattlePopup(prSwordGetPopup_Init+1, pPopup_NewWType, 90) // same
+	PostBattlePopup(prLanceGetPopup_Init+1, pPopup_NewWType, 90) // same
+	PostBattlePopup(prAxeGetPopup_Init+1,   pPopup_NewWType, 90) // same
+	PostBattlePopup(prBowGetPopup_Init+1,   pPopup_NewWType, 90) // same
+	PostBattlePopup(prStaffGetPopup_Init+1, pPopup_NewWType, 90) // same
+	PostBattlePopup(prAnimaGetPopup_Init+1, pPopup_NewWType, 90) // same
+	PostBattlePopup(prLightGetPopup_Init+1, pPopup_NewWType, 90) // same
+	PostBattlePopup(prDarkGetPopup_Init+1,  pPopup_NewWType, 90) // same
+PostBattlePopupEnd
+
+#endif // POPUP_HAX_EVENT

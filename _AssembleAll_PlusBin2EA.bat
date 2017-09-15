@@ -10,7 +10,7 @@ for /R %%F in (%FILE_MATCH%) do (
 	echo Assembling "%%~nxF"...
 	cd %%~dpF
 	(echo: | (call %ASSEMBLE_BAT% %%~nxF)) > nul
-	REM (%BIN2EA% "%%~nF.bin" "%%~nF.bin.event" -short) > nul
+	(%BIN2EA% "%%~nF.bin" "%%~nF.bin.event" -short) > nul
 )
 
 pause
