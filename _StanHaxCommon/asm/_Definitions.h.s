@@ -184,6 +184,10 @@
 .set prBG_EnableByMask,          0x08001FAC @ arguments: r0 = BG Mask
 .set prBG_Enable,                0x08001FBC @ arguments: r0 = BG index
 
+.set prEnablePaletteSync,        0x08001F94 @ none
+
+.set prBGMap_Fill,               0x08001220 @ arguments: r0 = BG Map Pointer, r1 = Value
+
 .set prBG1_Clear,                0x08055188 @ none
 
 .set prHandlePPCursorMovement,   0x0801C8AC @ none?
@@ -192,6 +196,14 @@
 
 .set prSaveData_GetSRAMLocation, 0x080A3064 @ arguments: r0 = Save Slot Index (0-2 for standard save, 3-4 for suspends, 5-6 unknown); returns: SRAM Location
 .set prSaveData_SaveToSRAM,      0x080D184C @ arguments: r0 = Input Data Ptr, r1 = Output SRAM pointer, r2 = Size (bytes)
+
+.set prDebugPrint,               0x080039D0 @ arguments: r0 = String
+.set prDebugPrintHex,            0x080039B4 @ arguments: r0 = Number, r1 = Digits
+.set prDebugFlushOnBG2_VScroll,  0x08003ABC @ arguments: r0 = current presses, r1 = new presses
+
+.set prDebugPrintOBJ,            0x08003BB0 @ arguments: r0 = x, r1 = y, r2 = String
+
+.set prSetupDebugBGFont,         0x0800378C @ arguments: r0 = bg id, r1 = tile offset
 
 @ =================================
 @ =========== RAM STUFF ===========
@@ -226,6 +238,9 @@
 .set pBG1TileMap,                0x020234A8
 .set pBG2TileMap,                0x02023CA8
 .set pBG3TileMap,                0x020244A8
+
+.set pPaletteBuffer,             0x020228A8
+.set pLCDControlBuffer,          0x03003080
 
 .set pPopupShortArgument,        0x030005F4
 .set ppPopupUnit,                0x030005F0

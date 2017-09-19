@@ -1,0 +1,101 @@
+#ifndef HAX_DEBUG_RESTORATION
+#define HAX_DEBUG_RESTORATION
+
+#include "../_StanHaxCommon/_6CDefinitions.event"
+
+PUSH
+	ORG 0x000AD8     // this is somewhere in the startup routine
+		BL(0x01C090) // Call the debug startup menu
+
+	ORG 0x59CEC0          // ORG to guide routines
+		POIN (0x04F448+1) // Always usable
+		WORD 0            // No Fancy draw
+		POIN (0x01BB1C+1) // Debug Map Menu
+		// POIN (0x01C2E4+1) // CPU Control Menu
+		// POIN (0x085374+1) // Game Over
+		// POIN (0x01C63C+1) // error
+		// POIN (0x048280+1) // Link Arena Name Select Menu
+		// POIN (0x022650+1) // Status Screen lol
+		// POIN (0x0C4878+1) // Credits
+		// POIN (0x04A614+1) // "Battle"?????
+		// POIN (0x0381F4+1) // Combat Record (New Record)
+		// POIN (0x024CBC+1) // Combat Record (Current vs Record)
+		// POIN (0x021518+1) // Game Over BG Effect + Hides Units & Silences music
+		// POIN (0x04A430+1) // Item Menu + Snag Select?
+		// POIN (0x07F878+1) // Those nice screen gfx from the final chapter?
+		// POIN (0x07FCC0+1) // Ground gfx from the final chapter
+		// POIN (0x080014+1) // lite! (same-ish as the aboves)
+		// POIN (0x080474+1) // seems like the part when the donkey kong gets into the stone
+		// POIN (0x085374+1) // Game Over whithout glitches (probably actual game over screen)
+		// POIN (0x085BFC+1) // Explosive light!
+		// POIN (0x0B6C94+1) // Character Endings
+		// POIN (0x0B8174+1) // Turn Counts
+	
+	ORG 0x1bd4c
+		POIN _p6CDEBMON
+
+	ORG 0x1bd98
+		POIN _p6CDEBMON
+
+	ORG 0x1be20
+		POIN _p6CDEBMON
+
+	ORG 0x1be94
+		POIN _p6CDEBMON
+
+	ORG 0x481c4
+		POIN _p6CDEBMON
+
+	ORG 0x4825c
+		POIN _p6CDEBMON
+
+	ORG 0x7c560
+		POIN _p6CDEBMON
+	
+	ORG 0x03103C
+		callHack_r3(_prHook_MakeDEBMON1+1)
+	
+	ORG 0x030F88
+		callHack_r3(_prHook_MakeDEBMON2+1)
+	
+	ORG 0x030E94
+		callHack_r3(_prHook_MakeDEBMON3+1)
+POP
+
+_psDEBMON:
+	String(DEBMON)
+	BYTE 0
+
+ALIGN 4
+_p6CDEBMON:
+	_6C_SET_NAME(_psDEBMON)
+	_6C_END_IF_DUPLICATE
+	_6C_SET_MARK(2)
+	_6C_CALL_ROUTINE(prDEBMON_Init+1)
+	_6C_LOOP_ROUTINE(prDEBMON_Loop+1)
+	_6C_END
+
+ALIGN 4
+prDEBMON_Init:
+	#incbin "asm/DEBMON_Init.bin"
+
+ALIGN 4
+prDEBMON_Loop:
+	#incbin "asm/DEBMON_Loop.bin"
+
+ALIGN 4
+_prHook_MakeDEBMON1:
+	#incbin "asm/Hook_MakeDEBMON1.bin"
+	POIN _p6CDEBMON
+
+ALIGN 4
+_prHook_MakeDEBMON2:
+	#incbin "asm/Hook_MakeDEBMON2.bin"
+	POIN _p6CDEBMON
+
+ALIGN 4
+_prHook_MakeDEBMON3:
+	#incbin "asm/Hook_MakeDEBMON3.bin"
+	POIN _p6CDEBMON
+
+#endif // HAX_DEBUG_RESTORATION
