@@ -18,21 +18,25 @@ ORG FreeSpace_BLRange
 
 ORG FreeSpace
 	#include "_FE8EssentialFixes.event"
-	#include "_StanHaxCommon/StanCommonASM.event"
+	// #include "_StanHaxCommon/StanCommonASM.event"
 
-	#include "MSG/InstallCore.event"
-	#include "MSG/InstallHelpers.event"
+	// #include "MSG/InstallCore.event"
+	// #include "MSG/InstallHelpers.event"
 	
-	#include "StatGetters/_InstallGetters.event"
+	// #include "StatGetters/_InstallGetters.event"
 	
-	#include "ProperRangeGetters/ProperRangeGetters.event"
+	// #include "ProperRangeGetters/ProperRangeGetters.event"
 
-	#include "IconDisplayRedone/IconDisplayRedone.event"
-	#include "PopupRework/PopupRework.event"
+	// #include "IconDisplayRedone/IconDisplayRedone.event"
+	// #include "PopupRework/PopupRework.event"
 	
-	#include "StealFixIsh/StealFix.event"
+	// #include "StealFixIsh/StealFix.event"
+	
+	#include "EventEngineAdditions/EventEngineAdditions.event"
 	
 	#include "CHAPTER/TechDemoChapter.event"
+	
+	#include "DebugRestorationProject/DebugRestoration.event"
 	
 	// #include "LolStats/LolStats.event"
 	// #include "HeroesMovement/HeroesMovement.event"
@@ -50,6 +54,97 @@ ORG FreeSpace
 	
 	// #include "_TestingRewarp/Rewarp.event"
 	// #include "_UnitMenuDefinitions.event"
+	
+	// #define MenuCommand(apsString, aprUsability, aprEffect) "POIN (apsString); WORD 0 0; POIN (aprUsability); WORD 0; POIN (aprEffect); WORD 0 0 0"
+	// #define MenuCommandEnd "WORD 0 0 0 0 0 0 0 0 0"
+	
+	// PUSH; ORG 0x9F36A8
+		// POIN pRouteSplitMenuCommands
+	// POP
+	
+	// PUSH; ORG 0x9F36A0
+		// WORD 6 8 12 0 // x y width height (height doesn't matter)
+	// POP
+	
+	// ALIGN 4
+	// pRouteSplitMenuCommands:
+		// MenuCommand(psHi, 0x04F448+1, 0x04F44C+1)
+		// MenuCommand(psHi, 0x04F448+1, 0x04F44C+1)
+		// MenuCommand(psHi, 0x04F448+1, 0x04F44C+1)
+		// MenuCommand(psHi, 0x04F448+1, 0x04F44C+1)
+		// MenuCommand(psHi, 0x04F448+1, 0x04F44C+1)
+	// MenuCommandEnd
+	
+	// psHi:
+		// String(Hi)
+		// BYTE 0
+	
+	// PUSH; ORG (0x9F36A0 + 8) // The pointer is 8 bytes into the definition
+		// POIN pNewLordSplitMenuCommands
+	// POP
+	
+	// ALIGN 4
+	
+	// #define EventMenuCommand(aTextId) "WORD 0; SHORT aTextId 0; WORD 0; POIN (0x04F448+1); WORD 0; POIN (prEventMenuCommandEffect+1); WORD 0 0 0"
+	// #define EventMenuCommandEnd "WORD 0 0 0 0 0 0 0 0 0"
+	
+	// pNewLordSplitMenuCommands:
+		// EventMenuCommand(0xC15)
+		// EventMenuCommand(0xC16)
+		// EventMenuCommand(0x437)
+	// EventMenuCommandEnd
+
+	// prEventMenuCommandEffect:
+		// SHORT 0xB500 0x203C 0x5C08 0x4B03 0x469E 0xF800 0x2017 0xBC02 0x4708 0x0000 0xD1F8 0x0800
+	
+	// prCallEventMenu:
+		// SHORT 0xB510 0x1C04 0x4B10 0x469E 0xF800 0x4A10 0x7850 0x2101 0x4308 0x2102 0x4308 0x2104 0x4308 0x2108 0x4308 0x2110 0x4308 0x7050 0x2000 0x4B0A 0x469E 0xF800 0x4B09 0x469E 0xF800 0x4B09 0x469E 0xF800 0x4809 0x1C21 0x4B07 0x469E 0xF800 0xBC10 0xBC01 0x4700 0xE884 0x0804 0x3080 0x0300 0x3D38 0x0800 0x43A8 0x0800 0xEB68 0x0804 0xEBC8 0x0804
+		// POIN pMenuDefinition
+	
+	// pMenuDefinition:
+		// BYTE 6 8 18 0           // Geomerty, order: X, Y, Width, Height (Height doesn't matter)
+		// WORD 1                  // idk
+		// POIN pCommandDefinition // Command Definitions
+		// WORD 0 0 0 0 0 0        // No routines to handle B press/R press/construction/etc
+	
+	// pCommandDefinition:
+		// EventMenuCommand(0xC15)
+		// EventMenuCommand(0xC16)
+		// EventMenuCommand(0x437)
+	// EventMenuCommandEnd
+	// Command 1 (Eirika)
+		// WORD 0          // No backup string
+		// SHORT 0xC15 0   // Label text id: 0xC15 ("Go with Eirika to Rausten.[X]"), Help text id: 0
+		// BYTE 0 0 0 0    // No extra parameters
+		// POIN 0x04F448+1 // Usability routine (this one returns "always usable")
+		// WORD 0          // No draw routine
+		// POIN prEventMenuCommandEffect+1 // Eirika command effect
+		// WORD 0 0 0      // Other 3 routines aren't used
+
+	// Command 2 (Ephraim)
+		// WORD 0          // No backup string
+		// SHORT 0xC16 0   // Label text id: 0xC16 ("Go with Ephraim to Grado.[.][X]"), Help text id: 0
+		// BYTE 0 0 0 0    // No extra parameters
+		// POIN 0x04F448+1 // Usability routine (this one returns "always usable")
+		// WORD 0          // No draw routine
+		// POIN prEventMenuCommandEffect+1 // Ephraim command effect
+		// WORD 0 0 0      // Other 3 routines aren't used
+
+	// Command 3 (Whatever)
+		// WORD 0          // No backup string
+		// SHORT 0x437 0   // Label text id: 0xC16 ("Go with Ephraim to Grado.[.][X]"), Help text id: 0
+		// BYTE 0 0 0 0    // No extra parameters
+		// POIN 0x04F448+1 // Usability routine (this one returns "always usable")
+		// WORD 0          // No draw routine
+		// POIN prEventMenuCommandEffect+1 // Ephraim command effect
+		// WORD 0 0 0      // Other 3 routines aren't used
+
+	// End
+		// WORD 0 0 0 0 0 0 0 0 0 // 9 times 0
+
+	// ORG 0x01CA88
+		// BL(0x01C090)
+		// POIN 0x59D040
 	
 	// Save Shit
 	

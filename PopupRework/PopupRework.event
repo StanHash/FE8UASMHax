@@ -49,8 +49,8 @@ HOW TO ADD NEW BATTLE POPUPS:
 
 ALIGN 4
 pBattlePopupShowupTable:
-	PostBattlePopup(prWpnBrokePopup_Init+1, 0x592420,  90) // duration was 96 in vanilla but I like roundness
-	PostBattlePopup(prWRankUpPopup_Init+1,  0x592468,  90) // same
+	PostBattlePopup(prWpnBrokePopup_Init+1, 0x592420, 90) // duration was 96 in vanilla but I like roundness
+	PostBattlePopup(prWRankUpPopup_Init+1,  0x592468, 90) // same
 PostBattlePopupEnd
 
 ALIGN 4

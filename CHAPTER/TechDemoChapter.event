@@ -28,6 +28,7 @@ pTurnEvents:
 END_MAIN
 
 pCharEvents:
+	CharacterEvent(0, pSomeTalkEvents, Eirika, Gilliam)
 	// still nothing
 END_MAIN
 
@@ -40,6 +41,69 @@ pActionEvents:
 	DefeatBoss(peEndScene)
 END_MAIN
 
+	// ASMC (prCallEventMenu+1)
+	// SADD 0x1C3 // r3 = rC + r1
+	
+	// CHECK_HARD
+	
+	// SVAL r1 [10, 0] // r1 = 10
+	
+	// SSUB r3 rC r1
+	
+	// GIVEITEMTOMAIN 0
+	
+	// ASMC 0x864CD
+	// ASMC (0x01C2D0+1) // "Manual Save" only
+	// ASMC (0x01C090+1) // Some Debug Menu o_O
+
+#include "../PopupRework/PopupDefinitions.event"
+
+pSomeTalkEvents:
+	SPTR  r4 pSomeData // SPTR is SVAL but for ROM pointers (aka removes the need for "|0x8000000")
+	
+	SLDRH r3 r4 r0 // r3 = [r4]
+	GIVEITEMTOMAIN 0
+	
+	SVAL  r2 2 // r2 = 2
+	SLDRH r3 r4 r2 // r3 = [r4 + r2]
+	
+	UNIT_SET_MAXHP (-1) (-1) // unit in r2, new value in r3
+	
+	SADD r2 r3 r0 // move r3 into r2
+	
+	POPUP_SET_NUMBER (-1) // number value in r2
+	POPUP_CALL 90 pGainedHPPopup // 90 frames
+
+	NoFade
+ENDA
+
+pSomeData:
+	SHORT 9999
+	SHORT 60
+
+pGainedHPPopup:
+	Popup_SetSound(0x5A)
+	Popup_StringPtr(psGained)
+	Popup_Number
+	Popup_StringPtr(psHP)
+Popup_End
+
+psGained:
+	String(You now have)
+	BYTE 0x20 // space
+	BYTE 0
+psHP:
+	BYTE 0x20 // space
+	String(HP!)
+	BYTE 0
+
+ALIGN 4
+
+// PUSH; ORG 0x01C2E0
+	// POIN 0x59D040
+	// POIN 0x59CFD4
+// POP
+
 peStartScene:
 	VCWF 6
 	
@@ -49,8 +113,12 @@ peStartScene:
 	LOAD1 0x00 puEnemyUnits
 	ENUN
 	
-	SVAL r3 0x4200
-	GIVEITEMTOMAIN 0
+	// SVAL r3 0x4200
+	// GIVEITEMTOMAIN 0
+	
+	// UNIT_SET_STATS Eirika pEirikaStats
+	
+	// UNIT_SET_MAXHP Gilliam (-1) // Load from r3
 	
 	NoFade
 ENDA
@@ -70,6 +138,10 @@ puEnemyUnits:
 	UNIT ONeill Brigand  0 Level(15, Enemy, True) [14, 9] 0b 0x00 0 0 [IronAxe]   PursueWithoutHeedAI
 	UNIT 0x80   Myrmidon 0 Level(15, Enemy, True) [1,  3] 0b 0x00 0 0 [Vulnerary, Vulnerary] LootingThiefAI
 UNIT
+
+pEirikaStats:
+	BYTE 60 30 30 30 30 30 30
+	ALIGN 4
 
 PUSH
 	ORG (0x809B10 + IronSword * 0x24 + 0x0C)

@@ -1,0 +1,31 @@
+#ifndef EVENT_ENGINE_ADDITIONS
+#define EVENT_ENGINE_ADDITIONS
+
+#include "EventEngineAdditions_Internal.event"
+
+// I'm reserving ids from 0x46 to 0x4F for now
+// This means 0x50 to 0x7F are free
+
+// CREDITS:
+// circleseverywhere for Rescue ASMC
+
+{
+
+SetLoEventCodeHandler(0x46, (_prEvent_Popup+1))
+SetLoEventCodeHandler(0x47, (_prEvent_UnitStats+1))
+SetLoEventCodeHandler(0x48, (_prEvent_MemoryRW+1))
+
+ALIGN 4
+_prEvent_Popup:
+	#incbin "asm/Event_Popup.bin"
+
+ALIGN 4
+_prEvent_UnitStats:
+	#incbin "asm/Event_UnitStats.bin"
+
+ALIGN 4
+_prEvent_MemoryRW:
+	#incbin "asm/Event_MemoryRW.bin"
+}
+
+#endif // EVENT_ENGINE_ADDITIONS

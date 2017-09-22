@@ -77,6 +77,8 @@
 
 .set prClass_GetROMStruct,       0x08019444 @ arguments: r0 = Class Index
 
+.set prUnit_GetFromEventParam,   0x0800BC50 @ arguments: r0 = Event Paramter; returns: r0 = Unit Struct
+
 .set prUnit_GetStruct,           0x08019430 @ arguments: r0 = Unit Allegience Index; returns: r0 = Unit Struct pointer (0 if not found)
 .set prUnit_ApplyMovement,       0x0801849C @ arguments: r0 = Unit Struct pointer
 .set prUnit_CanCrossTerrain,     0x0801949C @ arguments: r0 = Unit Struct pointer, r1 = Terrain Index; returns: r0 = 0 if Unit cannot cross/stand on terrain
@@ -226,6 +228,8 @@
 .set pGenericBuffer,             0x02020188 @ Used while saving among other cases
 
 .set pCurrentMapSize,            0x0202E4D4
+
+.set pEventSlot0,                0x030004B8 @ Array of words (D entries)
 
 .set ppUnitMapRows,              0x0202E4D8
 .set ppTerrainMapRows,           0x0202E4DC

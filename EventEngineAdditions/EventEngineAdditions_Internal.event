@@ -1,0 +1,90 @@
+#ifndef HAX_EVENT_ENGINE_FIXES_EVENT
+#define HAX_EVENT_ENGINE_FIXES_EVENT
+
+// PUSH
+	// ORG 0x10644
+		// #incbin "asm/Event39Inl_ChangeAI.bin"
+// POP
+
+PUSH
+	ORG 0x00CEE0 // Sole pointer to event call table (for event ids 0 to 0x7F)
+		POIN praLoEventCallTable
+POP
+
+#define SetLoEventCodeHandler(aEventCodeId, aprEventCodeHandlerRoutine) "PUSH; ORG praLoEventCallTable + (4* (aEventCodeId)); POIN (aprEventCodeHandlerRoutine); POP"
+
+ALIGN 4
+praLoEventCallTable:
+	POIN 0x00D5A0+1 // Event 00 does nothing
+	POIN 0x00D5A4+1 // Event 01 is ENDA/ENDB
+	POIN 0x00D670+1 // Event 02 is EVBIT_T/EVBIT_F/ENUF/ENUT
+	POIN 0x00D6E4+1 // Event 03 is CHECK_EVENTID/CHECK_EVBIT
+	POIN 0x00D754+1 // Event 04 is CHECK_RANDOM
+	POIN 0x00D77C+1 // Event 05 is SVAL
+	POIN 0x00D794+1 // Event 06 is SADD/SSUB/etc
+	POIN 0x00D918+1 // Event 07 is SAVETOQUEUE/SLOTS_SETFROMQUEUE/etc
+	POIN 0x00D97C+1 // Event 08 is LABEL (does nothing)
+	POIN 0x00D980+1 // Event 09 is GOTO/B
+	POIN 0x00D9B8+1 // Event 0A is CALL
+	POIN 0x00DA2C+1 // Event 0B
+	POIN 0x00DA78+1 // Event 0C is BEQ/BNE/etc
+	POIN 0x00DB00+1 // Event 0D is ASMC
+	POIN 0x00DB38+1 // Event 0E
+	POIN 0x00DBE0+1 // Event 0F
+	POIN 0x00DC98+1 // Event 10 is EVBIT_MODIFY
+	POIN 0x00DD58+1 // Event 11 sets Ignored Key Bitfield
+	POIN 0x00DD74+1 // Event 12
+	POIN 0x00DDB0+1 // Event 13
+	POIN 0x00DE14+1 // Event 14
+	POIN 0x00DE74+1 // Event 15
+	POIN 0x00DED4+1 // Event 16
+	POIN 0x00DF20+1 // Event 17
+	POIN 0x00DFBC+1 // Event 18
+	POIN 0x00E070+1 // Event 19 is a bunch of CHECKs (CHECK_MODE, CHECK_HARD, etc)
+	POIN 0x00E188+1 // Event 1A is TEXTSTART
+	POIN 0x00E3C8+1 // Event 1B is TEXTSHOW
+	POIN 0x00E51C+1 // Event 1C is TEXTCONT
+	POIN 0x00E560+1 // Event 1D is TEXTEND
+	POIN 0x00E6B4+1 // Event 1E
+	POIN 0x00E77C+1 // Event 1F
+	POIN 0x00E7C4+1 // Event 20
+	POIN 0x00E8CC+1 // Event 21
+	POIN 0x00F0C8+1 // Event 22
+	POIN 0x00F124+1 // Event 23
+	POIN 0x00F150+1 // Event 24
+	POIN 0x00F17C+1 // Event 25
+	POIN 0x00F20C+1 // Event 26 is CAM1 (Moves camera)
+	POIN 0x00F2D4+1 // Event 27 is TILECHANGE/TILEREVERSE
+	POIN 0x00F3EC+1 // Event 28 is WEA1 (Change Weather)
+	POIN 0x00F3FC+1 // Event 29 is VCWF (Sets fog vision)
+	POIN 0x00F42C+1 // Event 2A is MNCH/MNC2/MNC3/MNC4/MNTS
+	POIN 0x00FB18+1 // Event 2B
+	POIN 0x00FB84+1 // Event 2C is LOAD1/LOAD2/LOAD3/LOAD4
+	POIN 0x00FD0C+1 // Event 2D
+	POIN 0x00FD28+1 // Event 2E is CHECK_ACTIVE
+	POIN 0x00FD8C+1 // Event 2F is MOVE
+	POIN 0x00FF24+1 // Event 30 is ENUN
+	POIN 0x00FF68+1 // Event 31
+	POIN 0x00FFF8+1 // Event 32
+	POIN 0x010110+1 // Event 33 is CHECK_EXISTS/CHECK_STATUS/CHECK_LUCK/CHECK_COORDS/etc
+	POIN 0x010298+1 // Event 34
+	POIN 0x0104B0+1 // Event 35
+	POIN 0x01053C+1 // Event 36
+	POIN 0x0105A4+1 // Event 37 is GIVETO
+	POIN 0x010618+1 // Event 38 changes the active unit
+	POIN 0x010644+1 // Event 39
+	POIN 0x0106E4+1 // Event 3A
+	POIN 0x01079C+1 // Event 3B
+	POIN 0x010850+1 // Event 3C
+	POIN 0x0108AC+1 // Event 3D
+	POIN 0x010968+1 // Event 3E calls the prep screen
+	POIN 0x010A58+1 // Event 3F
+	POIN 0x010B78+1 // Event 40
+	POIN 0x010BEC+1 // Event 41
+	POIN 0x010C70+1 // Event 42
+	POIN 0x010CF0+1 // Event 43
+	POIN 0x010D28+1 // Event 44
+	POIN 0x010D5C+1 // Event 45
+	ORG (praLoEventCallTable + 4*(0x80))
+
+#endif // HAX_EVENT_ENGINE_FIXES_EVENT
