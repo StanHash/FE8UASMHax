@@ -52,30 +52,69 @@ END_MAIN
 	
 	// GIVEITEMTOMAIN 0
 	
-	// ASMC 0x864CD
 	// ASMC (0x01C2D0+1) // "Manual Save" only
 	// ASMC (0x01C090+1) // Some Debug Menu o_O
 
 #include "../PopupRework/PopupDefinitions.event"
 
+#define ActiveUnit (-1)        // 0xFFFF
+#define UnitAtCoordsSlotB (-2) // 0xFFFE
+#define UnitInSlot2 (-3)       // 0xFFFD
+
+#define CurrentUnit ActiveUnit
+#define UnitAtCoords UnitAtCoordsSlotB
+
 pSomeTalkEvents:
-	SPTR  r4 pSomeData // SPTR is SVAL but for ROM pointers (aka removes the need for "|0x8000000")
+	// SPTR  r4 pSomeData // SPTR is SVAL but for ROM pointers (aka removes the need for "|0x8000000")
 	
-	SLDRH r3 r4 r0 // r3 = [r4]
+	// SLDRH r3 r4 r0 // r3 = [r4]
+	// GIVEITEMTOMAIN 0
+	
+	// SVAL  r2 2 // r2 = 2
+	// SLDRH r3 r4 r2 // r3 = [r4 + r2]
+	
+	// UNIT_SET_MAXHP (-1) (-1) // active unit, new value in r3
+	
+	// SADD r2 r3 r0 // move r3 into r2
+	
+	// POPUP_SET_NUMBER (-1) // number value in r2
+	// POPUP_CALL 90 pGainedHPPopup // 90 frames
+	
+	ASMC (prCallEventMenu+1)
+	
+	SVAL r3 120
+	SVAL r1 100
+	SMOD r3 r3 r1
+
 	GIVEITEMTOMAIN 0
 	
-	SVAL  r2 2 // r2 = 2
-	SLDRH r3 r4 r2 // r3 = [r4 + r2]
-	
-	UNIT_SET_MAXHP (-1) (-1) // unit in r2, new value in r3
-	
-	SADD r2 r3 r0 // move r3 into r2
-	
-	POPUP_SET_NUMBER (-1) // number value in r2
-	POPUP_CALL 90 pGainedHPPopup // 90 frames
-
 	NoFade
 ENDA
+
+
+ALIGN 4
+
+#define EventMenuCommand(aTextId) "WORD 0; SHORT aTextId 0; WORD 0; POIN (0x04F448+1); WORD 0; POIN (prEventMenuCommandEffect+1); WORD 0 0 0"
+#define EventMenuCommandEnd "WORD 0 0 0 0 0 0 0 0 0"
+
+prEventMenuCommandEffect:
+	SHORT 0xB500 0x203C 0x5C08 0x4B03 0x469E 0xF800 0x2017 0xBC02 0x4708 0x0000 0xD1F8 0x0800
+
+prCallEventMenu:
+	SHORT 0xB510 0x1C04 0x4B10 0x469E 0xF800 0x4A10 0x7850 0x2101 0x4308 0x2102 0x4308 0x2104 0x4308 0x2108 0x4308 0x2110 0x4308 0x7050 0x2000 0x4B0A 0x469E 0xF800 0x4B09 0x469E 0xF800 0x4B09 0x469E 0xF800 0x4809 0x1C21 0x4B07 0x469E 0xF800 0xBC10 0xBC01 0x4700 0xE884 0x0804 0x3080 0x0300 0x3D38 0x0800 0x43A8 0x0800 0xEB68 0x0804 0xEBC8 0x0804
+	POIN pMenuDefinition
+
+pMenuDefinition:
+	BYTE 6 8 18 0           // Geomerty, order: X, Y, Width, Height (Height doesn't matter)
+	WORD 5                  // idk
+	POIN pCommandDefinition // Command Definitions
+	WORD 0 0 0 0 0 0        // No routines to handle B press/R press/construction/etc
+
+pCommandDefinition:
+	EventMenuCommand(0xC15)
+	EventMenuCommand(0xC16)
+	EventMenuCommand(0x437)
+EventMenuCommandEnd
 
 pSomeData:
 	SHORT 9999
@@ -107,12 +146,46 @@ ALIGN 4
 peStartScene:
 	VCWF 6
 	
+	// ASMC 0x30185
+	// ASMC (0x048280+1)
+	
 	LOAD1 0x00 puAlliedUnits
 	ENUN
 	
 	LOAD1 0x00 puEnemyUnits
 	ENUN
 	
+	// RANDOMNUMBER 10s
+	
+	// SPTR  r1 paTenUnits
+	// SLDRB r2 r1 rC
+	
+	SPAWN_ALLY Lute [4, 3] // Spawns Lute at [4, 3]
+	
+	SPAWN_NPC   0x80 [5, 3]
+	SPAWN_ENEMY 0x80 [6, 3]
+	
+	CHECK_AT [4, 3]
+	SADD r2 rC r0 // r2 should be Lute's char id
+	
+	SVAL r3 Fire
+	GIVETO UnitInSlot2
+	
+	SHOW_ATTACK_RANGE UnitInSlot2 // Displays Lute's attack range
+	STAL 30
+	HIDE_ATTACK_RANGE // Hides Lute's attack range
+	
+	MOVE 0x10 UnitInSlot2 [2,  3] // Move Lute to [2, 3]
+	ENUN
+	
+	CHECK_INAREA Lute [2,  3] [1, 1] // Check if lute is in rect defined by [2, 3, 2+1, 3+1]
+	BEQ 0 rC r0
+	
+	SWITCH_CLASSES   Eirika Gilliam // Eirika & Gilliam switches class
+	RECLASS          Seth Cavalier  // Seth is now a cav
+	RECLASS_FROMCHAR Gilliam Cormag // Gilliam is now a wyvern rider
+	
+LABEL 0
 	// SVAL r3 0x4200
 	// GIVEITEMTOMAIN 0
 	
@@ -120,8 +193,20 @@ peStartScene:
 	
 	// UNIT_SET_MAXHP Gilliam (-1) // Load from r3
 	
+	SVAL rB [2, 2] // Position
+	ASMC (prFogThing+1) // Call
+	STAL 60 // Wait
+	
 	NoFade
 ENDA
+
+ALIGN 4
+prFogThing:
+	SHORT 0xB500 0x4A07 0x4B07 0x8810 0x8999 0x0100 0x1A40 0x8851 0x89DA 0x0109 0x1A89 0x4B04 0x469E 0xF800 0xBC02 0x4708 0x04E4 0x0300 0xBCB0 0x0202 0x8A14 0x0807
+
+paTenUnits:
+	BYTE Ephraim LArachel Tana Vanessa Duessel Cormag Saleh Innes Syrene Kyle
+	ALIGN 4
 
 peEndScene:
 	MNC2 1
@@ -136,7 +221,7 @@ UNIT
 
 puEnemyUnits:
 	UNIT ONeill Brigand  0 Level(15, Enemy, True) [14, 9] 0b 0x00 0 0 [IronAxe]   PursueWithoutHeedAI
-	UNIT 0x80   Myrmidon 0 Level(15, Enemy, True) [1,  3] 0b 0x00 0 0 [Vulnerary, Vulnerary] LootingThiefAI
+	UNIT 0x80   Myrmidon 0 Level(1, Enemy, False) [1,  3] 0b 0x00 0 0 [SlimSword, Vulnerary] LootingThiefAI
 UNIT
 
 pEirikaStats:

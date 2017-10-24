@@ -1,12 +1,63 @@
 .thumb
 .include "_Definitions.h.s"
 
+@ THE PLAN:
+@ SUB 0 = Rescue
+@ SUB 1 = Drop
+
 Event_Rescue:
-	push {r4, lr}
+	push {r4-r6, lr}
 	
+	@ VARIABLES:
+	@ r4 is Event Cursor
+	@ r5 is Rescuer
+	@ r6 is Rescuee
+	
+	@ r1 = Event Cursor
+	ldr r4, [r0, #0x38]
+	
+	ldrh r2, [r4]
+	
+	@ r3 = event subcode
+	mov r3, #0xF
+	and r3, r2
+	
+	cmp r3, #0
+	bne HandleDrop
+HandleRescue:
+	ldrh r0, [r4, #2]
+	_blh prUnit_GetFromEventParam
+	
+	mov r5, r0
+	beq End @ Return if no Unit
+	
+	ldrh r0, [r4, #4]
+	_blh prUnit_GetFromEventParam
+	
+	mov r6, r0
+	beq End @ Return if no Unit
+	
+	@ r0 is unit being rescued
+	_blh #0x08037A6C @ TryRemoveFromBallista
+	
+	mov r0, r5
+	mov r1, r6
+	
+	_blh #0x0801834C @ Rescue
+	
+	mov r0, r6
+	
+	_blh #0x0802810C @ Hide Unit (probably)
+	
+	b End
+	
+HandleDrop:
+	
+	
+End:
 	mov r0, #0 @ Advance And Continue
 	
-	pop {r4}
+	pop {r4-r6}
 	
 	pop {r1}
 	bx r1

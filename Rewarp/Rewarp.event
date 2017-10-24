@@ -1,0 +1,105 @@
+#ifndef HAX_REWARP_EVENT
+#define HAX_REWARP_EVENT
+
+#ifndef _FE8_
+	ERROR REWARP is for FE8
+#endif // _FE8_
+
+#include "Tools/Tool Helpers.txt"
+
+#ifndef FreeSpace
+	#define FreeSpace 0xB2A610 // Size: 0xD59F0
+	ORG FreeSpace
+	
+	#include "../_FE8EssentialFixes.event"
+#endif
+
+#define ACTION_REWARP 0x27
+
+#include "../_StanHaxCommon/StanCommonASM.event"
+#include "../UnitActionRework/UnitActionRework.event"
+
+SetUnitAction(ACTION_REWARP, ActionRoutine(prActionRewarp+1))
+
+ALIGN 4
+prRewarpCommand_Usability:
+	SHORT 0x2001 0x4770
+
+ALIGN 4
+prRewarpCommand_Effect:
+	#incbin "asm/Effect_Rewarp.bin"
+	POIN (prFreeSelect6C_New+1)
+	POIN pRewarpFreeSelectDef
+
+ALIGN 4
+prActionRewarp:
+	#incbin "asm/Action_Rewarp.bin"
+
+ALIGN 4
+prRewarpSelect_OnSelection:
+	#incbin "asm/RewarpSelect_OnSelect.bin"
+	WORD ACTION_REWARP
+
+ALIGN 4
+prRewarpSelect_OnCancel:
+	#incbin "asm/RewarpSelect_OnCancel.bin"
+
+ALIGN 4
+pRewarpFreeSelectDef:
+	WORD 0 // OnInit
+	WORD 0 // OnDelet
+	POIN (prRewarpSelect_OnSelection+1) // OnAPress
+	POIN (prRewarpSelect_OnCancel+1)    // OnBPress
+	WORD 0 // OnRPress
+	WORD 0 // OnChange
+
+{
+#define textRewarpCommandName 0x65 // Replaces Unused "very bear" Text, Change this to a textprocess generated definition
+setText(textRewarpCommandName, psSmiteBottomHelpText)
+psSmiteBottomHelpText:
+	BYTE 0x20
+	String(Rewarp?)
+	BYTE 0
+}
+
+#include "../_UnitMenuDefinitions.event"
+
+PUSH; ORG 0x59D1F8 // Repoint Unit Menu Commands
+	POIN pUnitMenuCommands
+POP
+
+ALIGN 4
+pUnitMenuCommands:
+	UM_Seize
+	UM_Attack
+	UM_Attack_B
+	UM_Staff
+	UM_Ride
+	UM_Exit
+	UM_Play
+	UM_Dance
+	UM_Steal
+	UM_Summon
+	UM_Summon_DK
+	UM_Pick
+	UM_Talk
+	UM_Support
+	UM_Visit
+	UM_Chest
+	UM_Door
+	UM_Armory
+	UM_Vendor
+	UM_Secret
+	UM_Arena
+	UM_Rescue
+	UM_Give
+	UM_Take
+	UM_Drop
+	MenuCommand(textRewarpCommandName, textRewarpCommandName, NormalText, prRewarpCommand_Usability, prRewarpCommand_Effect)
+	UM_Item
+	UM_Trade
+	UM_Supply
+	UM_Wait
+UM_Separator
+
+#endif // HAX_REWARP_EVENT

@@ -8,14 +8,11 @@
 #define FreeSpace_BLRange 0x1C1EC0
 
 ORG FreeSpace_BLRange
-	#define inBLRange
-		
-		#include "6CDebugHax/6CDestructionFix.event"
-		
-	#undef inBLRange
+	// Nothing !
 
 ORG FreeSpace
 	#include "_FE8EssentialFixes.event"
+	#include "6CDebugHax/6CNameFix.event"
 	// #include "_StanHaxCommon/StanCommonASM.event"
 
 	// #include "MSG/InstallCore.event"
@@ -30,11 +27,11 @@ ORG FreeSpace
 	
 	// #include "StealFixIsh/StealFix.event"
 	
-	#include "EventEngineAdditions/EventEngineAdditions.event"
+	// #include "EventEngineAdditions/EventEngineAdditions.event"
 	
 	#include "CHAPTER/TechDemoChapter.event"
 	
-	#include "DebugRestorationProject/DebugRestoration.event"
+	// #include "DebugRestorationProject/DebugRestoration.event"
 	
 	// #include "LolStats/LolStats.event"
 	// #include "HeroesMovement/HeroesMovement.event"
@@ -50,7 +47,13 @@ ORG FreeSpace
 	
 	// #include "SpellAnimTest/SpellAnimTest.event"
 	
-	// #include "_TestingRewarp/Rewarp.event"
+	// #include "NewWM/NewWM.event"
+	
+	// #include "BerwickBattle/BerwickBattle.event"
+	
+	// #include "SickBattleAnims/SickBattleAnims.event"
+	
+	// #include "Rewarp/Rewarp.event"
 	// #include "_UnitMenuDefinitions.event"
 	
 	// #define MenuCommand(apsString, aprUsability, aprEffect) "POIN (apsString); WORD 0 0; POIN (aprUsability); WORD 0; POIN (aprEffect); WORD 0 0 0"
@@ -140,6 +143,26 @@ ORG FreeSpace
 	// End
 		// WORD 0 0 0 0 0 0 0 0 0 // 9 times 0
 
+	PUSH; ORG 0xA20164
+		POIN (prFixedDifficulty+1)
+	POP
+	
+	prFixedDifficulty:
+		SHORT (0x2200 | 1) // Difficulty: 0 for easy, 1 for normal, 2 for hard
+		SHORT 0x2300
+		SHORT 0x212A
+		SHORT 0x5442
+		SHORT 0x213D
+		SHORT 0x5443
+		SHORT 0x4770
+		ALIGN 4
+	
+	#include "_StanHaxCommon/_6CDefinitions.event"
+	
+	// PUSH; ORG 0x5B93C0 // ekrGauge
+		// _6C_BLOCK
+	// POP
+	
 	// ORG 0x01CA88
 		// BL(0x01C090)
 		// POIN 0x59D040
@@ -156,6 +179,16 @@ ORG FreeSpace
 	
 	// ORG 0xD01FE
 		// BYTE 0x5A 0x20
+	
+	// #include "Tools/Tool Helpers.txt"
+	
+	// pPortrait:
+		// #incext PortraitFormatter "fulf.png"
+		// setMugEntry(2, pPortrait, 3, 5, 3, 3)
+	
+	// PUSH; ORG 0x005D20
+		// BYTE 5
+	// POP
 	
 	// ORG 0xD0204
 		// BYTE 0xC0 0x00

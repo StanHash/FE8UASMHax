@@ -1,35 +1,30 @@
 .thumb
-.include "_Definitions.h.s"
+.include "fe8.inc"
 
-.set p6C_FreeSelect, EALiterals+0x00
+.set EAL_p6CFreeSelect, (EALiterals+0x00)
 
-FreeSelect6C_Constructor:
+@ Arguments: r0 = Routine Array Pointer
+@ Returns:   r0 = FreeSelect 6C Struct
+NewFreeSelect:
 	push {r4, lr}
 	
-	mov r4, r0
+	mov r4, r0 @ var r4 = Routine Array Pointer
 	
-	ldr r0, p6C_FreeSelect
+	@ Locking game logic
+	_blh LockGameLogic
+	
+	ldr r0, EAL_p6CFreeSelect
 	mov r1, #3
 	
-	_blh pr6C_New
+	_blh New6C
 	
 	@ Storing routine list
 	str r4, [r0, #0x2C]
 	
-	@ Loading init routine
-	ldr r3, [r4, #0x00]
-	
-	cmp r3, #0
-	beq End
-	
-	bl BXR3
-
-End:
 	pop {r4}
 	
-	pop {r3}
-BXR3:
-	bx r3
+	pop {r1}
+	bx r1
 
 .ltorg
 .align

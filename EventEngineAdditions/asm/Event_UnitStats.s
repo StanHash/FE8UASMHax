@@ -42,6 +42,7 @@ EndLoad:
 	_blh prUnit_GetFromEventParam
 	
 	mov r4, r0 @ r4 = Unit
+	beq End @ Goto End if no Unit
 	
 	mov  r1, #0
 	ldsb r1, [r5, r1] @ Load HP
@@ -68,9 +69,9 @@ ContinueStatSet:
 	mov r0, r4
 	_blh #0x080181C8 @ Check for Stat caps
 	
-	mov r0, #2 @ Advance & Yield
-	
 End:
+	mov r0, #0 @ Advance & Continue
+	
 	pop {r4-r5}
 	
 	pop {r1}
@@ -100,6 +101,9 @@ Event_UnitSetStat:
 UnitSetStat_NotLoadFromSlot3:
 	ldrh r0, [r1, #2]
 	_blh prUnit_GetFromEventParam
+	
+	cmp r0, #0
+	beq UnitSetStat_Return @ Return if no Unit
 	
 	cmp r5, #0 @ HP
 	bne UnitSetStat_NotHP

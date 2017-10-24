@@ -1,31 +1,36 @@
 .thumb
-.include "_Definitions.h.s"
+.include "fe8.inc"
+
+.set EAL_prHandleCode, (EALiterals+0x00)
 
 FreeSelect6C_Loop:
 	push {r4-r5, lr}
 	
-	mov r4, r0
+	mov r4, r0 @ var r4 = 6C
 	
-	_blh prHandlePPCursorMovement
+	ldr r0, =pGameDataStruct
+	ldr r5, [r0, #0x14] @ r5 = Cursor Position Pair
+	
+	_blh HandlePPCursorMovement
 	
 	@ (r1, r2) = Cursor Map Pos
 	ldr r0, =pGameDataStruct
 	ldrh r1, [r0, #0x14]
 	ldrh r2, [r0, #0x16]
 	
-	@ r3 = New Key Presses
-	ldr  r3, =pKeyStatusBuffer
-	ldrh r3, [r3, #8] @ New Presses
+	@ r0 = New Key Presses
+	ldr  r0, =pKeyStatusBuffer
+	ldrh r0, [r0, #8] @ New Presses
 	
-	mov r0, #0x01 @ A
-	tst r3, r0
+	mov r3, #0x01 @ A
+	tst r0, r3
 	beq NoAPress
 	
-	ldr r3, [r4, #0x2C]
+	ldr r3, [r4, #0x2C] @ routine array pointer
 	ldr r3, [r3, #0x08] @ OnAPress
 	
 	cmp r3, #0
-	beq Finish
+	beq NoAPress
 	
 	mov r0, r4
 	bl BXR3
@@ -33,15 +38,15 @@ FreeSelect6C_Loop:
 	b HandleCode
 	
 NoAPress:
-	mov r0, #0x02 @ B
-	tst r3, r0
+	mov r3, #0x02 @ B
+	tst r0, r3
 	beq NoBPress
 
-	ldr r3, [r4, #0x2C]
+	ldr r3, [r4, #0x2C] @ routine array pointer
 	ldr r3, [r3, #0x0C] @ OnBPress
 	
 	cmp r3, #0
-	beq Finish
+	beq NoBPress
 	
 	mov r0, r4
 	bl BXR3
@@ -49,118 +54,78 @@ NoAPress:
 	b HandleCode
 	
 NoBPress:
-	mov r0, #1
-	lsl r0, #8 @ R
-	tst r3, r0
+	mov r3, #1
+	lsl r3, #8 @ R
+	tst r0, r3
 	beq NoRPress
 	
-	ldr r3, [r4, #0x2C]
+	ldr r3, [r4, #0x2C] @ routine array pointer
 	ldr r3, [r3, #0x10] @ OnRPress
 	
 	cmp r3, #0
-	beq Finish
+	beq NoRPress
 	
 	mov r0, r4
 	bl BXR3
 	
-	@ b HandleCode
-	
-HandleCode:
-	mov r5, r0
-	
-	mov r0, #2
-	tst r5, r0
-	beq NoDelete
-	
-	mov r0, r4
-	_blh pr6C_BreakLoop
-	
-	mov r0, r4
-	
-	ldr r3, [r0, #0x2C]
-	ldr r3, [r3, #0x04]
-	
-	cmp r3, #0
-	beq NoCall
-	
-	bl BXR3
-	
-NoCall:
-	ldr r0, [r4, #0x30]
-	_blh prTCS_Free
-	
-	b End @ No need to draw, so go directly to end
-	
-NoDelete:
-	mov r0, #4
-	tst r5, r0
-	beq NoBeep
-	
-	ldr  r0, =pChapterDataStruct
-	add  r0, #0x41
-	ldrb r0, [r0]
-	
-	lsl r0, #0x1E
-	blt NoBeep
-	
-	mov r0, #0x6A
-	_blh prPlaySound
-	
-NoBeep:
-	mov r0, #8
-	tst r5, r0
-	beq NoBoop
-	
-	ldr  r0, =pChapterDataStruct
-	add  r0, #0x41
-	ldrb r0, [r0]
-	
-	lsl r0, #0x1E
-	blt NoBoop
-	
-	mov r0, #0x6B
-	_blh prPlaySound
-	
-NoBoop:
-	mov r0, #0x10
-	tst r5, r0
-	beq NoGurr
-
-	ldr  r0, =pChapterDataStruct
-	add  r0, #0x41
-	ldrb r0, [r0]
-	
-	lsl r0, #0x1E
-	blt NoGurr
-	
-	mov r0, #0x6C
-	_blh prPlaySound
+	b HandleCode
 	
 NoRPress:
-NoGurr:
+	ldr r0, =pGameDataStruct
+	ldr r0, [r0, #0x14] @ r0 = Cursor Position Pair
+	
+	cmp r0, r5
+	beq NoPositionChange
+	
+	ldr r3, [r4, #0x2C] @ routine array pointer
+	ldr r3, [r3, #0x10] @ OnPositionChange
+	
+	cmp r3, #0
+	beq NoPositionChange
+	
+	mov r0, r4
+	bl BXR3
+
+HandleCode:
+	mov r1, r0
+	mov r0, r4
+	
+	ldr r3, EAL_prHandleCode
+	bl BXR3
+	
+	cmp r0, #0
+	bne End
+	
+NoPositionChange:
 Finish:
 	@ Update Cursor Graphics
 	
 	ldr r3, =pGameDataStruct
 	
-	mov r0, #0x20
+	@ Cursor Gfx X
+	mov  r0, #0x20
 	ldsh r1, [r3, r0]
 	
-	mov r0, #0x0C
+	@ Camera X
+	mov  r0, #0x0C
 	ldsh r2, [r3, r0]
 	
+	@ Draw X
 	sub r1, r2
 	
-	mov r0, #0x22
+	@ Cursor Gfx Y
+	mov  r0, #0x22
 	ldsh r2, [r3, r0]
 	
-	mov r0, #0x0E
+	@ Camera Y
+	mov  r0, #0x0E
 	ldsh r3, [r3, r0]
 	
+	@ Draw Y
 	sub r2, r3
 	
 	ldr r0, [r4, #0x30]
-	_blh prTCS_Draw
+	_blh TCS_Update
 	
 End:
 	pop {r4-r5}
@@ -173,4 +138,4 @@ BXR3:
 .align
 
 EALiterals:
-	@ noting
+	@ POIN prHandleCode+1

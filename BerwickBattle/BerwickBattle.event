@@ -1,0 +1,33 @@
+#ifndef HAX_BERWICK_BATTLE
+#define HAX_BERWICK_BATTLE
+
+#ifndef _FE8_
+	ERROR _file_ is for FE8
+#endif
+
+#include "Extensions/Hack Installation.txt"
+#include "eastdlib.event"
+
+#ifndef FreeSpace
+	#define FreeSpace 0xB2A610
+	ORG FreeSpace
+#endif
+
+{
+PUSH; ORG 0x02AED0
+	jumpToHack((_prBWSB_MakeBattle+1))
+POP
+
+ALIGN 4
+_prBWSB_MakeBattle:
+	#incbin "asm/MakeBattle.bin"
+	POIN (_prBWSB_GetPlus+1)
+
+ALIGN 4
+_prBWSB_GetPlus:
+	#incbin "asm/GetPlus.bin"
+	WORD 0 // TODO: test a weapon flag
+
+}
+
+#endif // HAX_BERWICK_BATTLE

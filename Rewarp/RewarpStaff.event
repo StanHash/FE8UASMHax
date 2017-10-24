@@ -1,0 +1,103 @@
+#ifndef HAX_REWARP_STAFF
+#define HAX_REWARP_STAFF
+
+#ifndef _FE8_
+	ERROR _file_ is for FE8!
+#endif // _FE8_
+
+#ifndef FreeSpace
+	#define FreeSpace 0xB2A610 // Size: 0xD59F0
+	ORG FreeSpace
+	
+	WARNING Defaulted Free Space to FreeSpace
+#endif
+
+// #define DefaultOffset
+// #include "../_3rdParty/ItemEffectRevamp16/EA Main Installer.txt"
+
+#include "../_StanHaxCommon/FreeSelect6C.event"
+
+PUSH
+	ORG (0x0288B0+3*4)
+		POIN prRewarpStaff_RawUsability
+	
+	ORG (0x028E8C+3*4)
+		POIN prRewarpStaff_RawTargetting
+	
+	ORG (0x02FC90+3*4)
+		POIN prRewarpStaff_RawEffect
+POP
+
+ALIGN 4
+prRewarpStaff_RawUsability:
+	SHORT 0x1C20 // mov r0, r4 @ arg r0 = unit
+	SHORT 0x1C29 // mov r1, r5 @ arg r1 = item
+	BL(prRewarpStaff_Usability)
+	SHORT 0x4900 // ldr r1, =#(0x08028C06+1)
+	SHORT 0x4708 // bx r1
+	WORD  (0x08028C06+1)
+
+ALIGN 4
+prRewarpStaff_RawTargetting:
+	SHORT 0x1C20 // mov r0, r4 @ arg r0 = unit
+	SHORT 0x1C29 // mov r1, r5 @ arg r1 = item
+	BL(prRewarpStaff_Targetting)
+	SHORT 0x4900 // ldr r1, =#(0x08029062+1)
+	SHORT 0x4708 // bx r1
+	WORD  (0x08029062+1)
+
+ALIGN 4
+prRewarpStaff_RawEffect:
+	SHORT 0x1C30 // mov r0, r6 @ arg r0 = 6C
+	BL(prRewarpStaff_Effect)
+	SHORT 0x4901 // ldr r1, =#(0x0802FF76+1)
+	SHORT 0x4708 // bx r1
+	SHORT 0x46C0 // nop
+	WORD  (0x0802FF76+1)
+
+ALIGN 4
+prRewarpStaff_Usability:
+	#incbin "asm/RewarpStaff/RewarpStaff_Usability.bin"
+
+ALIGN 4
+prRewarpStaff_Targetting:
+{
+	#incbin "asm/RewarpStaff/RewarpStaff_Targetting.bin"
+	POIN _pFreeSelectDef
+	POIN (prNewFreeSelect+1)
+
+_pFreeSelectDef:
+	POIN (_prOnInit+1)
+	POIN (_prOnEnd+1)
+	POIN (_prOnSelect+1)
+	POIN (_prOnCancel+1)
+	WORD 0 // lol R Press
+	POIN (_prOnChange+1)
+
+ALIGN 4
+_prOnInit:
+	#incbin "asm/RewarpStaff/RewarpStaff_SelectOnInit.bin"
+
+ALIGN 4
+_prOnEnd:
+	#incbin "asm/RewarpStaff/RewarpStaff_SelectOnEnd.bin"
+
+ALIGN 4
+_prOnSelect:
+	#incbin "asm/RewarpStaff/RewarpStaff_SelectOnSelect.bin"
+
+ALIGN 4
+_prOnCancel:
+	#incbin "asm/RewarpStaff/RewarpStaff_SelectOnCancel.bin"
+
+ALIGN 4
+_prOnChange:
+	#incbin "asm/RewarpStaff/RewarpStaff_SelectOnChange.bin"
+
+}
+
+ALIGN 4
+prRewarpStaff_Effect:
+	#incbin "asm/RewarpStaff/RewarpStaff_Effect.bin"
+
+#endif // HAX_REWARP_STAFF

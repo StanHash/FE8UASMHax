@@ -1,10 +1,8 @@
 .thumb
 .include "fe8.inc"
 
-FreeSelect6C_Destructor:
+RewarpStaff_Effect:
 	push {lr}
-	
-	_blh UnlockGameLogic
 	
 	pop {r1}
 	bx r1
@@ -13,4 +11,4 @@ FreeSelect6C_Destructor:
 .align
 
 EALiterals:
-	@ noting
+	@ nothing

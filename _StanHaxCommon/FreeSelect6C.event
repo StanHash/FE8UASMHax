@@ -1,49 +1,49 @@
-#ifndef HAX_FREE_SELECT_6C_EVENT
-#define HAX_FREE_SELECT_6C_EVENT
+#ifndef HAX_FREE_SELECTION
+#define HAX_FREE_SELECTION
 
 #include "_6CDefinitions.event"
 
 ALIGN 4
-prFreeSelect6C_New:
+prNewFreeSelect:
+{
 	#incbin "asm/FreeSelect6C/Constructor.bin"
 	POIN p6C_FreeSelect
 
 ALIGN 4
 p6C_FreeSelect:
-{
-#ifndef NDEBUG
-	_6C_SET_NAME(_psFreeSelect6C_Name)
-#endif
-	
-	_6C_CALL_ROUTINE(0x15361) // Block Game Logic
-	_6C_CALL_ROUTINE(_prFreeSelect6C_Init+1)
-	
-	_6C_WHILE_EXISTS(0x59A548) // GENS 6C, camera movement
-	_6C_LOOP_ROUTINE(_prFreeSelect6C_Loop+1)
+	_6C_SET_NAME(_psName)
+	_6C_SET_DESTRUCTOR(_prOnEnd+1)
 	
 	_6C_YIELD
 	
-	_6C_WHILE_EXISTS(0x59A548) // GENS 6C, camera movement
-	_6C_CALL_ROUTINE(0x15371) // Unblock Game Logic
+	_6C_CALL_ROUTINE(_prOnInit+1)
+	_6C_LOOP_ROUTINE(_prOnLoop+1)
+	
+	// _6C_WHILE_EXISTS(0x59A548) // GENS 6C, camera movement
+	
 	_6C_END
 
-#ifndef NDEBUG
-_psFreeSelect6C_Name:
+_psName:
 	String(Stan_FreeSelect)
-	BYTE 0
-#endif
+	BYTE 0; ALIGN 4
 
 ALIGN 4
-_prFreeSelect6C_Init:
+_prOnInit:
 	#incbin "asm/FreeSelect6C/Init.bin"
 
 ALIGN 4
-_prFreeSelect6C_Loop:
+_prOnLoop:
 	#incbin "asm/FreeSelect6C/Loop.bin"
+	POIN (_prHandleCode+1)
 
 ALIGN 4
-_prFreeSelect6C_Destruct:
+_prOnEnd:
 	#incbin "asm/FreeSelect6C/Destructor.bin"
+
+ALIGN 4
+_prHandleCode:
+	#incbin "asm/FreeSelect6C/HandleCode.bin"
+
 }
 
-#endif // HAX_FREE_SELECT_6C_EVENT
+#endif // HAX_FREE_SELECTION
