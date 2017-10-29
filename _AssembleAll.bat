@@ -35,7 +35,7 @@ for /R %%F in (%FILE_MATCH%) do (
 	)
 
 	@rem we also delete the elf, cause that's just a waste of space at this point
-	echo y | del "%%~nF.elf"
+	REM echo y | del "%%~nF.elf"
 )
 
 pause

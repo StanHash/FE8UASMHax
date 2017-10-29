@@ -19,8 +19,7 @@
 	POP
 
 	ALIGN 4
-	GetStatIncrease:
-		#incbin "asm/GetStatIncrease.bin"
+	#inctext lyn "asm\GetStatIncrease.elf"
 }
 
 #endif // HAX_LOLSTATS_EVENT
