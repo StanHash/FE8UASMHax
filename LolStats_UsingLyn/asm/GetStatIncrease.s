@@ -1,6 +1,7 @@
 .thumb
 
-.set NextRN_100, 0x08000C64
+.global GetStatIncrease
+.type   GetStatIncrease, %function
 
 @ Arguments: r0 = Growth
 @ Returns: r0 = Stat Increase

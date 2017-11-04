@@ -14,12 +14,8 @@
 #endif
 
 {
-	PUSH; ORG 0x2B9A0
-		replaceWithHack(GetStatIncrease)
-	POP
-
 	ALIGN 4
-	#inctext lyn "asm\GetStatIncrease.elf"
+	#inctext lyn -autohook "asm/GetStatIncrease.elf" "asm/Definitions.elf"
 }
 
 #endif // HAX_LOLSTATS_EVENT
